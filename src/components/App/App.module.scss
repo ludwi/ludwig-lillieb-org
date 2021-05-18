@@ -1,0 +1,21 @@
+@import '../../styling/variables.scss';
+
+.app {
+    background: linear-gradient(315deg, $primaryLight 0%, $primaryDark 100%);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__title {
+        color: $white;
+        font-size: 3.2rem;
+        line-height: 1;
+        letter-spacing: 2px;
+
+        @media (min-width: $breakpoint-tablet) {
+            font-size: 8.2rem;
+        }
+    }
+}
