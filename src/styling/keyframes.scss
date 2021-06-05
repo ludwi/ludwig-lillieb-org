@@ -1,0 +1,14 @@
+@keyframes fadeInLetter {
+    0% { opacity: 0; }
+    100% { opacity: 1;}
+}
+
+@keyframes fadeInDots {
+    0% { opacity: 0; width: 0px; }
+    100% { opacity: 1; width: 24px; }
+}
+
+@keyframes fadeOutWhitespace {
+    0% { opacity: 1; width: 24px; }
+    100% { opacity: 0; width: 0; }
+}
