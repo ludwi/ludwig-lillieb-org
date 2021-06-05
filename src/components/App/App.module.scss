@@ -30,9 +30,14 @@
 
         &--whitespace {
             opacity: 1;
-            width: 24px;
+            width: 10px;
             will-change: opacity, width;
-            animation: fadeOutWhitespace 1.0s 3.0s normal forwards ease;
+            animation: fadeOutWhitespaceMobile 1.0s 3.0s normal forwards ease;
+
+            @media (min-width: $breakpoint-tablet) {
+                width: 24px;
+                animation: fadeOutWhitespaceDesktop 1.0s 3.0s normal forwards ease;
+            }
         }
 
         &--1 {
@@ -62,7 +67,11 @@
         &--7 {
             width: 0;
             will-change: opacity, width;
-            animation: fadeInDots 1.0s 3.0s normal forwards ease;
+            animation: fadeInDotsMobile 1.0s 3.0s normal forwards ease;
+            
+            @media (min-width: $breakpoint-tablet) {
+                animation: fadeInDotsDesktop 1.0s 3.0s normal forwards ease;
+            }
         }
 
         &--8 {
@@ -95,7 +104,11 @@
 
         &--15 {
             width: 0;
-            animation: fadeInDots 1.0s 3.0s normal forwards ease;
+            animation: fadeInDotsMobile 1.0s 3.0s normal forwards ease;
+
+            @media (min-width: $breakpoint-tablet) {
+                animation: fadeInDotsDesktop 1.0s 3.0s normal forwards ease;
+            }
         }
 
         &--16 {

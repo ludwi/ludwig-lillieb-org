@@ -14,3 +14,4 @@ yarn-error.log*
 .npm/
 yarn.lock
 docs/CNAME
+CNAME
