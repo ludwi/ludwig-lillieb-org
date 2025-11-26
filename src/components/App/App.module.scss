@@ -177,6 +177,7 @@
     right: 0;
     bottom: 0;
     height: 100vh;
+    height: 100dvh;
     background: $white;
     z-index: 100;
     display: flex;
@@ -193,6 +194,10 @@
     @media (max-width: 900px) {
         flex-direction: column;
         overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
     }
 
     &__controls {
@@ -256,6 +261,7 @@
         padding: 4rem 3.2rem;
         color: $black;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         background: #f0f0f0;
         transition: background-color 0.3s ease, color 0.3s ease;
 
@@ -276,6 +282,7 @@
             overflow-y: visible;
             flex-shrink: 0;
             height: auto;
+            -webkit-overflow-scrolling: auto;
         }
     }
 
@@ -283,6 +290,7 @@
         flex: 1;
         padding: 4rem 4rem 4rem 4.8rem;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         background: $white;
         transition: background-color 0.3s ease;
 
@@ -300,6 +308,7 @@
             flex: none;
             height: auto;
             overflow-y: visible;
+            -webkit-overflow-scrolling: auto;
         }
     }
 
