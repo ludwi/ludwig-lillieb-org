@@ -7,7 +7,6 @@ import s from '../src/components/App/App.module.scss';
 const COLOR_PALETTE_DARK = ['#ff6038', '#ffda45', '#f5a700', '#e84011', '#40e0d0'];
 const COLOR_PALETTE_LIGHT = ['#ff6038', '#a066bb', '#f5a700', '#e84011', '#40e0d0'];
 const FINAL_TEXT = 'ludwig lillieborg';
-const FINAL_TITLE = 'full-stack developer';
 const MISTAKE_TEXT = 'ludvi ';
 const BACKSPACE_TO_LENGTH = 3;
 const INITIAL_DELAY_MS = 2000;
@@ -21,21 +20,7 @@ const PAUSE_BEFORE_DELETE_MS = 500;
 const PAUSE_AFTER_DELETE_MS = 1500;
 const DEBUG_MODE = false;
 
-function generateUniqueColors(count, palette) {
-  const colors = [];
-  for (let i = 0; i < count; i++) {
-    let color;
-    do {
-      color = palette[Math.floor(Math.random() * palette.length)];
-    } while (color === colors[i - 1]);
-    colors.push(color);
-  }
-  return colors;
-}
-
-function getRandomDelay(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 function useTypingEffect(startDelay) {
   const [displayedText, setDisplayedText] = useState(DEBUG_MODE ? FINAL_TEXT : '');
@@ -60,33 +45,26 @@ function useTypingEffect(startDelay) {
   }, []);
 
   useEffect(() => {
-    if (showCV) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-    }
+    const styles = showCV
+      ? { overflow: 'hidden', position: 'fixed', width: '100%', height: '100%' }
+      : { overflow: '', position: '', width: '', height: '' };
+
+    Object.assign(document.body.style, styles);
+
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
+      Object.assign(document.body.style, { overflow: '', position: '', width: '', height: '' });
     };
   }, [showCV]);
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark-mode');
-      document.documentElement.classList.remove('light-mode');
-    } else {
-      document.documentElement.classList.add('light-mode');
-      document.documentElement.classList.remove('dark-mode');
-    }
+    document.documentElement.classList.remove('dark-mode', 'light-mode');
+    void document.documentElement.offsetHeight;
+
+    const timeout = setTimeout(() => {
+      document.documentElement.classList.add(theme === 'dark' ? 'dark-mode' : 'light-mode');
+    }, 10);
+
+    return () => clearTimeout(timeout);
   }, [theme]);
 
   useEffect(() => {
@@ -158,26 +136,18 @@ function useBlinkingCursor(intervalMs) {
   return visible;
 }
 
-function ColoredLetter({ char, color, isSelected }) {
-  return (
-    <span
-      style={{
-        color: isSelected ? '#ffffff' : color,
-        backgroundColor: isSelected ? '#0066cc' : 'transparent'
-      }}
-    >
-      {char}
-    </span>
-  );
-}
+const ColoredLetter = ({ char, color, isSelected }) => (
+  <span style={{
+    color: isSelected ? '#ffffff' : color,
+    backgroundColor: isSelected ? '#0066cc' : 'transparent'
+  }}>
+    {char}
+  </span>
+);
 
-function Cursor({ visible }) {
-  return (
-    <span className={s.app__cursor} style={{ opacity: visible ? 1 : 0 }}>
-      |
-    </span>
-  );
-}
+const Cursor = ({ visible }) => (
+  <span className={s.app__cursor} style={{ opacity: visible ? 1 : 0 }}>|</span>
+);
 
 const content = {
   role: 'Lorem Ipsum',
@@ -236,6 +206,9 @@ const animationVariants = {
 };
 
 function CVOverlay({ visible, colors, theme, setTheme }) {
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
+
   return (
     <AnimatePresence>
       {visible && (
@@ -244,142 +217,78 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
           initial={{ clipPath: 'circle(0% at 0% 100%)' }}
           animate={{ clipPath: 'circle(150% at 0% 100%)' }}
           exit={{ clipPath: 'circle(0% at 0% 100%)' }}
-          transition={{
-            type: 'spring',
-            stiffness: 80,
-            damping: 20,
-            duration: 1.2
-          }}
+          transition={{ type: 'spring', stiffness: 80, damping: 20, duration: 1.2 }}
           role="main"
           aria-label="Curriculum Vitae"
         >
-          <motion.div
-            className={s.cv__controls}
-            {...animationVariants.controls}
-          >
+          <motion.div className={s.cv__controls} {...animationVariants.controls}>
             <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={toggleTheme}
               className={s.cv__toggle}
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-label={`Switch to ${oppositeTheme} mode`}
             >
               {theme === 'dark' ? <MdLightMode /> : <MdDarkMode />}
             </button>
           </motion.div>
 
-          <motion.aside
-            className={s.cv__sidebar}
-            aria-label="Personal information"
-            {...animationVariants.sidebar}
-          >
-            <motion.div
-              className={s.cv__profile}
-              {...animationVariants.sidebarItem}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
+          <motion.aside className={s.cv__sidebar} aria-label="Personal information" {...animationVariants.sidebar}>
+            <motion.div className={s.cv__profile} {...animationVariants.sidebarItem} transition={{ delay: 0.5, duration: 0.5 }}>
               <div className={s.cv__imageContainer}>
-                <div className={s.cv__image} role="img" aria-label="Profile photo placeholder"></div>
+                <div className={s.cv__image} role="img" aria-label="Profile photo placeholder" />
               </div>
               <h2 className={s.cv__name}>
                 {'Ludwig Lillieborg'.split('').map((char, i) => (
-                  <span key={i} style={{ color: colors[i % colors.length] }}>
-                    {char}
-                  </span>
+                  <span key={i} style={{ color: colors[i % colors.length] }}>{char}</span>
                 ))}
               </h2>
               <p className={s.cv__role}>{content.role}</p>
             </motion.div>
 
-            <motion.address
-              className={s.cv__contact}
-              {...animationVariants.sidebarItem}
-              transition={{ delay: 0.65, duration: 0.5 }}
-            >
+            <motion.address className={s.cv__contact} {...animationVariants.sidebarItem} transition={{ delay: 0.65, duration: 0.5 }}>
               <p>{content.email}</p>
               <p>{content.location}</p>
             </motion.address>
           </motion.aside>
 
           <div className={s.cv__main}>
-            <motion.section
-              className={s.cv__section}
-              aria-labelledby="about-heading"
-              {...animationVariants.section}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            >
+            <motion.section className={s.cv__section} aria-labelledby="about-heading" {...animationVariants.section} transition={{ delay: 0.6, duration: 0.5 }}>
               <h3 id="about-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.about}</h3>
-              <p className={s.cv__text}>
-                {content.aboutText}
-              </p>
+              <p className={s.cv__text}>{content.aboutText}</p>
             </motion.section>
 
-            <motion.section
-              className={s.cv__section}
-              aria-labelledby="experience-heading"
-              {...animationVariants.section}
-              transition={{ delay: 0.7, duration: 0.5 }}
-            >
+            <motion.section className={s.cv__section} aria-labelledby="experience-heading" {...animationVariants.section} transition={{ delay: 0.7, duration: 0.5 }}>
               <h3 id="experience-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.experience}</h3>
-
               <div className={s.cv__timeline} role="list" aria-label="Work experience timeline">
                 {content.experiences.map((exp, i) => (
-                  <motion.div
-                    key={i}
-                    className={s.cv__experience}
-                    role="listitem"
-                    {...animationVariants.experienceItem}
-                    transition={{ delay: 0.85 + i * 0.15, duration: 0.4 }}
-                  >
-                    <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true"></div>
+                  <motion.div key={i} className={s.cv__experience} role="listitem" {...animationVariants.experienceItem} transition={{ delay: 0.85 + i * 0.15, duration: 0.4 }}>
+                    <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
                     <div className={s.cv__timelineContent}>
                       <div className={s.cv__itemHeader}>
                         <h4 className={s.cv__itemTitle}>{exp.title}</h4>
                         <span className={s.cv__itemDate}>{exp.period}</span>
                       </div>
                       <p className={s.cv__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
-                      <p className={s.cv__text}>
-                        {exp.description}
-                      </p>
+                      <p className={s.cv__text}>{exp.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </motion.section>
 
-            <motion.section
-              className={s.cv__section}
-              aria-labelledby="skills-heading"
-              {...animationVariants.section}
-              transition={{ delay: 0.8, duration: 0.5 }}
-            >
+            <motion.section className={s.cv__section} aria-labelledby="skills-heading" {...animationVariants.section} transition={{ delay: 0.8, duration: 0.5 }}>
               <h3 id="skills-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.skills}</h3>
               <ul className={s.cv__skillsGrid} role="list" aria-label="Technical skills">
                 {content.skillsList.map((skill, i) => (
-                  <motion.li
-                    key={skill}
-                    className={s.cv__skillItem}
-                    style={{
-                      borderLeftColor: colors[1],
-                      backgroundColor: colors[1] + '15'
-                    }}
-                    {...animationVariants.skillItem}
-                    transition={{ delay: 1.0 + i * 0.08, duration: 0.3 }}
-                  >
+                  <motion.li key={skill} className={s.cv__skillItem} style={{ borderLeftColor: colors[1], backgroundColor: colors[1] + '15' }} {...animationVariants.skillItem} transition={{ delay: 1.0 + i * 0.08, duration: 0.3 }}>
                     {skill}
                   </motion.li>
                 ))}
               </ul>
             </motion.section>
 
-            <motion.section
-              className={s.cv__section}
-              aria-labelledby="personal-heading"
-              {...animationVariants.section}
-              transition={{ delay: 0.9, duration: 0.5 }}
-            >
+            <motion.section className={s.cv__section} aria-labelledby="personal-heading" {...animationVariants.section} transition={{ delay: 0.9, duration: 0.5 }}>
               <h3 id="personal-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.personal}</h3>
-              <p className={s.cv__text}>
-                {content.personalText}
-              </p>
+              <p className={s.cv__text}>{content.personalText}</p>
             </motion.section>
           </div>
         </motion.div>
@@ -390,17 +299,13 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
 
 export default function Home() {
   const { displayedText, isSelected, showCV, colorShift, theme, setTheme } = useTypingEffect(INITIAL_DELAY_MS);
+  const cursorVisible = useBlinkingCursor(CURSOR_BLINK_MS);
 
   const currentPalette = theme === 'dark' ? COLOR_PALETTE_DARK : COLOR_PALETTE_LIGHT;
-  const colors = useMemo(() => {
-    const length = Math.max(FINAL_TEXT.length, FINAL_TITLE.length);
-    const result = [];
-    for (let i = 0; i < length; i++) {
-      result.push(currentPalette[i % currentPalette.length]);
-    }
-    return result;
-  }, [currentPalette]);
-  const cursorVisible = useBlinkingCursor(CURSOR_BLINK_MS);
+  const colors = useMemo(() =>
+    Array.from({ length: FINAL_TEXT.length }, (_, i) => currentPalette[i % currentPalette.length]),
+    [currentPalette]
+  );
 
   return (
     <>
@@ -408,23 +313,28 @@ export default function Home() {
         <title>Ludwig Lillieborg</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="author" content="Ludwig Lillieborg" />
-
         <meta property="og:title" content="Ludwig Lillieborg" />
         <meta property="og:description" content="Ludwig Lillieborgs website" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://ludwig.lillieb.org" />
-
         <link rel="canonical" href="https://ludwig.lillieb.org" />
       </Head>
+
       <div className={s.app}>
         <h1 className={s.app__title} aria-live="polite" aria-label="Terminal typing animation">
           <span className={s.app__prompt} aria-hidden="true">$</span>
           {displayedText.split('').map((char, i) => (
-            <ColoredLetter key={i} char={char} color={colors[(i - colorShift + colors.length) % colors.length]} isSelected={isSelected} />
+            <ColoredLetter
+              key={i}
+              char={char}
+              color={colors[(i - colorShift + colors.length) % colors.length]}
+              isSelected={isSelected}
+            />
           ))}
           <Cursor visible={cursorVisible && !isSelected} />
         </h1>
       </div>
+
       <CVOverlay visible={showCV} colors={currentPalette} theme={theme} setTheme={setTheme} />
     </>
   );

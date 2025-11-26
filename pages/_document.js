@@ -12,6 +12,7 @@ export default function Document() {
             __html: `
               (function() {
                 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.remove('dark-mode', 'light-mode');
                 document.documentElement.classList.add(isDark ? 'dark-mode' : 'light-mode');
               })();
             `,
