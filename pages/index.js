@@ -4,7 +4,7 @@ import s from '../src/components/App/App.module.scss';
 
 const COLOR_PALETTE = ['#db5d81', '#7aa0bd', '#eca854', '#bc0d12', '#009ba0'];
 const FINAL_TEXT = 'ludwig lillieborg';
-const FINAL_TITLE = 'fullstack developer';
+const FINAL_TITLE = 'full-stack developer';
 const MISTAKE_TEXT = 'ludvig li';
 const BACKSPACE_TO_LENGTH = 3;
 const INITIAL_DELAY_MS = 2000;
