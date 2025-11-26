@@ -102,7 +102,7 @@ function useTypingEffect(startDelay) {
     } else if (phase === 'typing-correct' && displayedText.length < FINAL_TEXT.length) {
       timeout = setTimeout(() => {
         setDisplayedText(FINAL_TEXT.slice(0, displayedText.length + 1));
-      }, getRandomDelay(TIMING.TYPING_MIN, TYPING.TYPING_MAX));
+      }, getRandomDelay(TIMING.TYPING_MIN, TIMING.TYPING_MAX));
     } else if (phase === 'typing-correct' && displayedText === FINAL_TEXT) {
       timeout = setTimeout(() => setPhase('color-shifting'), TIMING.PAUSE_AFTER_NAME);
     } else if (phase === 'color-shifting' && colorShift < 5) {
