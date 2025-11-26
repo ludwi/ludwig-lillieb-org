@@ -20,3 +20,9 @@ CNAME
 /.next/
 /out/
 *.next
+/docs/cache/
+/docs/server/
+/docs/trace
+/docs/build-manifest.json
+/docs/package.json
+/docs/react-loadable-manifest.json
