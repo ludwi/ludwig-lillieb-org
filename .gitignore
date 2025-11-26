@@ -20,7 +20,3 @@ CNAME
 /.next/
 /out/
 *.next
-
-# production
-/docs/*
-!/docs/CNAME
