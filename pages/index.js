@@ -9,7 +9,7 @@ const COLOR_PALETTE_LIGHT = ['#ff6038', '#a066bb', '#f5a700', '#e84011', '#40e0d
 const FINAL_TEXT = 'ludwig lillieborg';
 const MISTAKE_TEXT = 'ludvi ';
 const BACKSPACE_TO_LENGTH = 3;
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 
 const TIMING = {
   INITIAL_DELAY: 2000,
