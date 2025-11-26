@@ -5,16 +5,16 @@ import s from '../src/components/App/App.module.scss';
 const COLOR_PALETTE = ['#db5d81', '#7aa0bd', '#eca854', '#bc0d12', '#009ba0'];
 const FINAL_TEXT = 'ludwig lillieborg';
 const FINAL_TITLE = 'full-stack developer';
-const MISTAKE_TEXT = 'ludvig li';
+const MISTAKE_TEXT = 'ludvi ';
 const BACKSPACE_TO_LENGTH = 3;
 const INITIAL_DELAY_MS = 2000;
 const CURSOR_BLINK_MS = 530;
 const TYPING_DELAY_MIN_MS = 50;
-const TYPING_DELAY_MAX_MS = 350;
-const BACKSPACE_DELAY_MS = 100;
-const PAUSE_BEFORE_CORRECTION_MS = 500;
-const PAUSE_AFTER_NAME_MS = 2000;
-const PAUSE_AFTER_SELECT_MS = 1200;
+const TYPING_DELAY_MAX_MS = 250;
+const BACKSPACE_DELAY_MS = 250;
+const PAUSE_BEFORE_CORRECTION_MS = 0;
+const PAUSE_AFTER_NAME_MS = 1500;
+const PAUSE_AFTER_SELECT_MS = 750;
 const PAUSE_BEFORE_TITLE_MS = 250;
 
 function generateUniqueColors(count, palette) {
@@ -104,10 +104,12 @@ function useBlinkingCursor(intervalMs) {
 
 function ColoredLetter({ char, color, isSelected }) {
   return (
-    <span style={{
-      color: isSelected ? '#ffffff' : color,
-      backgroundColor: isSelected ? '#0066cc' : 'transparent'
-    }}>
+    <span
+      style={{
+        color: isSelected ? '#ffffff' : color,
+        backgroundColor: isSelected ? '#0066cc' : 'transparent'
+      }}
+    >
       {char}
     </span>
   );
