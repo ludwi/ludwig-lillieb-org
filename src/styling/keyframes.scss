@@ -4,21 +4,25 @@
 }
 
 @keyframes fadeInDotsMobile {
-    0% { opacity: 0; width: 0px; }
-    100% { opacity: 1; width: 10px; }
+    0% { opacity: 0; width: 0px; margin-right: 0px; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; width: 10px; margin-right: 10px; }
 }
 
 @keyframes fadeOutWhitespaceMobile {
     0% { opacity: 1; width: 10px; }
+    50% { opacity: 0.5; }
     100% { opacity: 0; width: 0; }
 }
 
 @keyframes fadeInDotsDesktop {
-    0% { opacity: 0; width: 0px; }
-    100% { opacity: 1; width: 24px; }
+    0% { opacity: 0; width: 0px; margin-right: 0px; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; width: 24px; margin-right: 24px; }
 }
 
 @keyframes fadeOutWhitespaceDesktop {
     0% { opacity: 1; width: 24px; }
+    50% { opacity: 0.5; }
     100% { opacity: 0; width: 0; }
 }
