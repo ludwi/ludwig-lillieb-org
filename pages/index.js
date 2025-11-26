@@ -1,7 +1,7 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdLightMode, MdDarkMode } from 'react-icons/md';
+import { MdLightMode, MdDarkMode, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import s from '../src/components/App/App.module.scss';
 
 const COLOR_PALETTE_DARK = ['#ff6038', '#ffda45', '#f5a700', '#e84011', '#40e0d0'];
@@ -9,18 +9,31 @@ const COLOR_PALETTE_LIGHT = ['#ff6038', '#a066bb', '#f5a700', '#e84011', '#40e0d
 const FINAL_TEXT = 'ludwig lillieborg';
 const MISTAKE_TEXT = 'ludvi ';
 const BACKSPACE_TO_LENGTH = 3;
-const INITIAL_DELAY_MS = 2000;
-const CURSOR_BLINK_MS = 530;
-const TYPING_DELAY_MIN_MS = 100;
-const TYPING_DELAY_MAX_MS = 250;
-const BACKSPACE_DELAY_MS = 250;
-const PAUSE_BEFORE_CORRECTION_MS = 0;
-const PAUSE_AFTER_NAME_MS = 1000;
-const PAUSE_BEFORE_DELETE_MS = 500;
-const PAUSE_AFTER_DELETE_MS = 1500;
 const DEBUG_MODE = false;
 
+const TIMING = {
+  INITIAL_DELAY: 2000,
+  CURSOR_BLINK: 530,
+  TYPING_MIN: 100,
+  TYPING_MAX: 250,
+  BACKSPACE: 250,
+  PAUSE_BEFORE_CORRECTION: 0,
+  PAUSE_AFTER_NAME: 1000,
+  PAUSE_BEFORE_DELETE: 500,
+  PAUSE_AFTER_DELETE: 1500
+};
+
+const DESKTOP_BREAKPOINT = 900;
+const TOTAL_SECTIONS = 4;
+
 const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+const getAnimationProps = (isDesktop, variant, customTransition = {}) => {
+  if (isDesktop) {
+    return { ...variant, transition: customTransition };
+  }
+  return { animate: { opacity: 1, y: 0 } };
+};
 
 function useTypingEffect(startDelay) {
   const [displayedText, setDisplayedText] = useState(DEBUG_MODE ? FINAL_TEXT : '');
@@ -28,18 +41,11 @@ function useTypingEffect(startDelay) {
   const [isSelected, setIsSelected] = useState(false);
   const [showCV, setShowCV] = useState(false);
   const [colorShift, setColorShift] = useState(0);
-  const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
+  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     if (DEBUG_MODE) {
-      const timeout = setTimeout(() => {
-        setShowCV(true);
-      }, 500);
+      const timeout = setTimeout(() => setShowCV(true), 500);
       return () => clearTimeout(timeout);
     }
   }, []);
@@ -50,10 +56,7 @@ function useTypingEffect(startDelay) {
       : { overflow: '', position: '', width: '', height: '' };
 
     Object.assign(document.body.style, styles);
-
-    return () => {
-      Object.assign(document.body.style, { overflow: '', position: '', width: '', height: '' });
-    };
+    return () => Object.assign(document.body.style, { overflow: '', position: '', width: '', height: '' });
   }, [showCV]);
 
   useEffect(() => {
@@ -79,29 +82,23 @@ function useTypingEffect(startDelay) {
     if (phase === 'typing-mistake' && displayedText.length < MISTAKE_TEXT.length) {
       timeout = setTimeout(() => {
         setDisplayedText(MISTAKE_TEXT.slice(0, displayedText.length + 1));
-      }, getRandomDelay(TYPING_DELAY_MIN_MS, TYPING_DELAY_MAX_MS));
+      }, getRandomDelay(TIMING.TYPING_MIN, TIMING.TYPING_MAX));
     } else if (phase === 'typing-mistake' && displayedText === MISTAKE_TEXT) {
-      timeout = setTimeout(() => {
-        setPhase('backspacing');
-      }, PAUSE_BEFORE_CORRECTION_MS);
+      timeout = setTimeout(() => setPhase('backspacing'), TIMING.PAUSE_BEFORE_CORRECTION);
     } else if (phase === 'backspacing' && displayedText.length > BACKSPACE_TO_LENGTH) {
       timeout = setTimeout(() => {
         setDisplayedText(displayedText.slice(0, -1));
-      }, BACKSPACE_DELAY_MS);
+      }, TIMING.BACKSPACE);
     } else if (phase === 'backspacing' && displayedText.length === BACKSPACE_TO_LENGTH) {
       setPhase('typing-correct');
     } else if (phase === 'typing-correct' && displayedText.length < FINAL_TEXT.length) {
       timeout = setTimeout(() => {
         setDisplayedText(FINAL_TEXT.slice(0, displayedText.length + 1));
-      }, getRandomDelay(TYPING_DELAY_MIN_MS, TYPING_DELAY_MAX_MS));
+      }, getRandomDelay(TIMING.TYPING_MIN, TIMING.TYPING_MAX));
     } else if (phase === 'typing-correct' && displayedText === FINAL_TEXT) {
-      timeout = setTimeout(() => {
-        setPhase('color-shifting');
-      }, PAUSE_AFTER_NAME_MS);
+      timeout = setTimeout(() => setPhase('color-shifting'), TIMING.PAUSE_AFTER_NAME);
     } else if (phase === 'color-shifting' && colorShift < 5) {
-      timeout = setTimeout(() => {
-        setColorShift(colorShift + 1);
-      }, 250);
+      timeout = setTimeout(() => setColorShift(colorShift + 1), 250);
     } else if (phase === 'color-shifting' && colorShift === 5) {
       timeout = setTimeout(() => {
         setPhase('selecting');
@@ -112,11 +109,9 @@ function useTypingEffect(startDelay) {
         setPhase('deleting');
         setDisplayedText('');
         setIsSelected(false);
-      }, PAUSE_BEFORE_DELETE_MS);
+      }, TIMING.PAUSE_BEFORE_DELETE);
     } else if (phase === 'deleting') {
-      timeout = setTimeout(() => {
-        setShowCV(true);
-      }, PAUSE_AFTER_DELETE_MS);
+      timeout = setTimeout(() => setShowCV(true), TIMING.PAUSE_AFTER_DELETE);
     }
 
     return () => clearTimeout(timeout);
@@ -136,6 +131,19 @@ function useBlinkingCursor(intervalMs) {
   return visible;
 }
 
+function useDesktopDetection() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth > DESKTOP_BREAKPOINT);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  return isDesktop;
+}
+
 const ColoredLetter = ({ char, color, isSelected }) => (
   <span style={{
     color: isSelected ? '#ffffff' : color,
@@ -153,27 +161,39 @@ const content = {
   role: 'Lorem Ipsum',
   email: 'lorem@ipsum.com',
   location: 'Lorem, Ipsum',
-  about: 'Om',
-  aboutText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
-  experience: 'Erfarenhet',
-  skills: 'Kompetenser',
-  skillsList: ['Lorem', 'Ipsum', 'Dolor', 'Sit', 'Amet', 'Consectetur', 'Adipiscing', 'Elit'],
-  personal: 'Privat',
-  personalText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.',
-  experiences: [
+  sections: [
     {
-      title: 'Lorem Ipsum Dolor',
-      company: 'Sit Amet Consectetur',
-      period: 'XXXX - Lorem',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+      id: 'about',
+      title: 'Om',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
     },
     {
-      title: 'Adipiscing Elit Sed',
-      company: 'Do Eiusmod Tempor',
-      period: 'XXXX - XXXX',
-      description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      id: 'personal',
+      title: 'Privat',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.'
     }
-  ]
+  ],
+  experience: {
+    title: 'Erfarenhet',
+    items: [
+      {
+        title: 'Lorem Ipsum Dolor',
+        company: 'Sit Amet Consectetur',
+        period: 'XXXX - Lorem',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+      },
+      {
+        title: 'Adipiscing Elit Sed',
+        company: 'Do Eiusmod Tempor',
+        period: 'XXXX - XXXX',
+        description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      }
+    ]
+  },
+  skills: {
+    title: 'Kompetenser',
+    items: ['Lorem', 'Ipsum', 'Dolor', 'Sit', 'Amet', 'Consectetur', 'Adipiscing', 'Elit']
+  }
 };
 
 const animationVariants = {
@@ -192,22 +212,161 @@ const animationVariants = {
     animate: { opacity: 1, x: 0 }
   },
   section: {
-    initial: { opacity: 0, x: 40 },
-    animate: { opacity: 1, x: 0 }
+    initial: { opacity: 0 },
+    whileInView: { opacity: 1 },
+    viewport: { once: false, amount: 0.5 }
+  },
+  sectionContent: {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.6 }
   },
   experienceItem: {
-    initial: { opacity: 0, x: 30 },
-    animate: { opacity: 1, x: 0 }
+    initial: { opacity: 0, y: 30 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.5 }
   },
   skillItem: {
-    initial: { opacity: 0, x: 20 },
-    animate: { opacity: 1, x: 0 }
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.3 }
+  },
+  text: {
+    initial: { opacity: 0, y: 15 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.6 }
   }
 };
+
+const TextSection = ({ section, colors, isDesktop }) => (
+  <motion.section
+    className={s.cv__section}
+    aria-labelledby={`${section.id}-heading`}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 })}
+  >
+    <motion.div
+      className={s.cv__sectionContent}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 })}
+    >
+      <h3 id={`${section.id}-heading`} className={s.cv__sectionTitle} style={{ color: colors[1] }}>
+        {section.title}
+      </h3>
+      <motion.p
+        className={s.cv__text}
+        {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.4 })}
+      >
+        {section.text}
+      </motion.p>
+    </motion.div>
+  </motion.section>
+);
+
+const ExperienceSection = ({ colors, isDesktop }) => (
+  <motion.section
+    className={s.cv__section}
+    aria-labelledby="experience-heading"
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 })}
+  >
+    <motion.div
+      className={s.cv__sectionContent}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 })}
+    >
+      <h3 id="experience-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
+        {content.experience.title}
+      </h3>
+      <div className={s.cv__timeline} role="list" aria-label="Work experience timeline">
+        {content.experience.items.map((exp, i) => (
+          <motion.div
+            key={i}
+            className={s.cv__experience}
+            role="listitem"
+            {...getAnimationProps(isDesktop, animationVariants.experienceItem, { duration: 0.6, delay: 0.4 + i * 0.1 })}
+          >
+            <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
+            <div className={s.cv__timelineContent}>
+              <div className={s.cv__itemHeader}>
+                <h4 className={s.cv__itemTitle}>{exp.title}</h4>
+                <span className={s.cv__itemDate}>{exp.period}</span>
+              </div>
+              <p className={s.cv__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
+              <motion.p
+                className={s.cv__text}
+                {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.6 + i * 0.1 })}
+              >
+                {exp.description}
+              </motion.p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  </motion.section>
+);
+
+const SkillsSection = ({ colors, isDesktop }) => (
+  <motion.section
+    className={s.cv__section}
+    aria-labelledby="skills-heading"
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 })}
+  >
+    <motion.div
+      className={s.cv__sectionContent}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 })}
+    >
+      <h3 id="skills-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
+        {content.skills.title}
+      </h3>
+      <ul className={s.cv__skillsGrid} role="list" aria-label="Technical skills">
+        {content.skills.items.map((skill, i) => (
+          <motion.li
+            key={skill}
+            className={s.cv__skillItem}
+            style={{ borderLeftColor: colors[1], backgroundColor: colors[1] + '15' }}
+            {...getAnimationProps(isDesktop, animationVariants.skillItem, { duration: 0.5, delay: 0.4 + i * 0.05 })}
+          >
+            {skill}
+          </motion.li>
+        ))}
+      </ul>
+    </motion.div>
+  </motion.section>
+);
 
 function CVOverlay({ visible, colors, theme, setTheme }) {
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
   const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
+  const mainRef = useRef(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [activeSection, setActiveSection] = useState(0);
+  const isDesktop = useDesktopDetection();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!mainRef.current) return;
+      const { scrollTop, clientHeight } = mainRef.current;
+      const sectionIndex = Math.round(scrollTop / clientHeight);
+
+      setActiveSection(sectionIndex);
+      setShowScrollDown(sectionIndex === 0);
+      setShowScrollUp(sectionIndex === TOTAL_SECTIONS - 1);
+    };
+
+    const mainEl = mainRef.current;
+    if (mainEl) {
+      mainEl.addEventListener('scroll', handleScroll);
+      setTimeout(handleScroll, 100);
+      return () => mainEl.removeEventListener('scroll', handleScroll);
+    }
+  }, [visible, isDesktop]);
+
+  const scrollToSection = useCallback((direction) => {
+    if (!mainRef.current) return;
+    const { scrollTop, clientHeight } = mainRef.current;
+    const currentSection = Math.round(scrollTop / clientHeight);
+    const targetSection = direction === 'next' ? currentSection + 1 : currentSection - 1;
+    mainRef.current.scrollTo({ top: Math.max(0, targetSection * clientHeight), behavior: 'smooth' });
+  }, []);
 
   return (
     <AnimatePresence>
@@ -250,46 +409,45 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
             </motion.address>
           </motion.aside>
 
-          <div className={s.cv__main}>
-            <motion.section className={s.cv__section} aria-labelledby="about-heading" {...animationVariants.section} transition={{ delay: 0.6, duration: 0.5 }}>
-              <h3 id="about-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.about}</h3>
-              <p className={s.cv__text}>{content.aboutText}</p>
-            </motion.section>
+          <div className={s.cv__mainWrapper}>
+            <div className={s.cv__scrollProgress}>
+              {Array.from({ length: TOTAL_SECTIONS }, (_, i) => (
+                <div
+                  key={i}
+                  className={activeSection === i ? s.cv__scrollDotActive : s.cv__scrollDot}
+                />
+              ))}
+            </div>
 
-            <motion.section className={s.cv__section} aria-labelledby="experience-heading" {...animationVariants.section} transition={{ delay: 0.7, duration: 0.5 }}>
-              <h3 id="experience-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.experience}</h3>
-              <div className={s.cv__timeline} role="list" aria-label="Work experience timeline">
-                {content.experiences.map((exp, i) => (
-                  <motion.div key={i} className={s.cv__experience} role="listitem" {...animationVariants.experienceItem} transition={{ delay: 0.85 + i * 0.15, duration: 0.4 }}>
-                    <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
-                    <div className={s.cv__timelineContent}>
-                      <div className={s.cv__itemHeader}>
-                        <h4 className={s.cv__itemTitle}>{exp.title}</h4>
-                        <span className={s.cv__itemDate}>{exp.period}</span>
-                      </div>
-                      <p className={s.cv__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
-                      <p className={s.cv__text}>{exp.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.section>
+            <motion.button
+              className={s.cv__scrollIndicatorUp}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: showScrollUp ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => scrollToSection('prev')}
+              aria-label="Scroll to previous section"
+            >
+              <MdKeyboardArrowUp className={s.cv__scrollChevron} />
+            </motion.button>
 
-            <motion.section className={s.cv__section} aria-labelledby="skills-heading" {...animationVariants.section} transition={{ delay: 0.8, duration: 0.5 }}>
-              <h3 id="skills-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.skills}</h3>
-              <ul className={s.cv__skillsGrid} role="list" aria-label="Technical skills">
-                {content.skillsList.map((skill, i) => (
-                  <motion.li key={skill} className={s.cv__skillItem} style={{ borderLeftColor: colors[1], backgroundColor: colors[1] + '15' }} {...animationVariants.skillItem} transition={{ delay: 1.0 + i * 0.08, duration: 0.3 }}>
-                    {skill}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.section>
+            <motion.button
+              className={s.cv__scrollIndicatorDown}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: showScrollDown ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => scrollToSection('next')}
+              aria-label="Scroll to next section"
+            >
+              <MdKeyboardArrowDown className={s.cv__scrollChevron} />
+            </motion.button>
 
-            <motion.section className={s.cv__section} aria-labelledby="personal-heading" {...animationVariants.section} transition={{ delay: 0.9, duration: 0.5 }}>
-              <h3 id="personal-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>{content.personal}</h3>
-              <p className={s.cv__text}>{content.personalText}</p>
-            </motion.section>
+            <div className={s.cv__main} ref={mainRef} key={isDesktop ? 'desktop' : 'mobile'}>
+              {content.sections.map((section) => (
+                <TextSection key={section.id} section={section} colors={colors} isDesktop={isDesktop} />
+              ))}
+              <ExperienceSection colors={colors} isDesktop={isDesktop} />
+              <SkillsSection colors={colors} isDesktop={isDesktop} />
+            </div>
           </div>
         </motion.div>
       )}
@@ -298,8 +456,8 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
 }
 
 export default function Home() {
-  const { displayedText, isSelected, showCV, colorShift, theme, setTheme } = useTypingEffect(INITIAL_DELAY_MS);
-  const cursorVisible = useBlinkingCursor(CURSOR_BLINK_MS);
+  const { displayedText, isSelected, showCV, colorShift, theme, setTheme } = useTypingEffect(TIMING.INITIAL_DELAY);
+  const cursorVisible = useBlinkingCursor(TIMING.CURSOR_BLINK);
 
   const currentPalette = theme === 'dark' ? COLOR_PALETTE_DARK : COLOR_PALETTE_LIGHT;
   const colors = useMemo(() =>
