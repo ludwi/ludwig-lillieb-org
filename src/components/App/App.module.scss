@@ -30,6 +30,15 @@
         }
     }
 
+    &__prompt {
+        color: $black;
+        margin-right: 0.5em;
+
+        @media (prefers-color-scheme: dark) {
+            color: $white;
+        }
+    }
+
     &__cursor {
         position: absolute;
         margin-left: 2px;
