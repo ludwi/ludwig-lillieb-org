@@ -1,12 +1,15 @@
 import { useMemo, useState, useEffect } from 'react';
+import Head from 'next/head';
 import s from '../src/components/App/App.module.scss';
 
 const COLOR_PALETTE = ['#db5d81', '#7aa0bd', '#eca854', '#bc0d12', '#009ba0'];
-const TEXT = 'ludwig lillieborg';
+const FINAL_TEXT = 'ludwig lillieborg';
 const INITIAL_DELAY_MS = 2000;
 const CURSOR_BLINK_MS = 530;
 const TYPING_DELAY_MIN_MS = 50;
 const TYPING_DELAY_MAX_MS = 350;
+const BACKSPACE_DELAY_MS = 100;
+const PAUSE_BEFORE_CORRECTION_MS = 500;
 
 function generateUniqueColors(count, palette) {
   const colors = [];
@@ -24,23 +27,45 @@ function getRandomDelay(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function useTypingEffect(text, startDelay) {
+function useTypingEffect(startDelay) {
   const [displayedText, setDisplayedText] = useState('');
-  const [started, setStarted] = useState(false);
+  const [phase, setPhase] = useState('initial');
 
   useEffect(() => {
-    const timeout = setTimeout(() => setStarted(true), startDelay);
+    const timeout = setTimeout(() => setPhase('typing-mistake'), startDelay);
     return () => clearTimeout(timeout);
   }, [startDelay]);
 
   useEffect(() => {
-    if (started && displayedText.length < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText(text.slice(0, displayedText.length + 1));
+    let timeout;
+
+    if (phase === 'typing-mistake' && displayedText.length < 9) {
+      // Type "ludvig li" (9 characters)
+      timeout = setTimeout(() => {
+        setDisplayedText('ludvig li'.slice(0, displayedText.length + 1));
       }, getRandomDelay(TYPING_DELAY_MIN_MS, TYPING_DELAY_MAX_MS));
-      return () => clearTimeout(timeout);
+    } else if (phase === 'typing-mistake' && displayedText === 'ludvig li') {
+      // Pause before correction
+      timeout = setTimeout(() => {
+        setPhase('backspacing');
+      }, PAUSE_BEFORE_CORRECTION_MS);
+    } else if (phase === 'backspacing' && displayedText.length > 3) {
+      // Backspace to "lud"
+      timeout = setTimeout(() => {
+        setDisplayedText(displayedText.slice(0, -1));
+      }, BACKSPACE_DELAY_MS);
+    } else if (phase === 'backspacing' && displayedText.length === 3) {
+      // Start typing correct version
+      setPhase('typing-correct');
+    } else if (phase === 'typing-correct' && displayedText.length < FINAL_TEXT.length) {
+      // Type the rest: "wig lillieborg"
+      timeout = setTimeout(() => {
+        setDisplayedText(FINAL_TEXT.slice(0, displayedText.length + 1));
+      }, getRandomDelay(TYPING_DELAY_MIN_MS, TYPING_DELAY_MAX_MS));
     }
-  }, [displayedText, started, text]);
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, phase]);
 
   return displayedText;
 }
@@ -70,20 +95,27 @@ function Cursor({ visible }) {
 
 export default function Home() {
   const colors = useMemo(
-    () => generateUniqueColors(TEXT.length, COLOR_PALETTE),
+    () => generateUniqueColors(FINAL_TEXT.length, COLOR_PALETTE),
     []
   );
-  const displayedText = useTypingEffect(TEXT, INITIAL_DELAY_MS);
+  const displayedText = useTypingEffect(INITIAL_DELAY_MS);
   const cursorVisible = useBlinkingCursor(CURSOR_BLINK_MS);
 
   return (
-    <div className={s.app}>
-      <h1 className={s.app__title}>
-        {displayedText.split('').map((char, i) => (
-          <ColoredLetter key={i} char={char} color={colors[i]} />
-        ))}
-        <Cursor visible={cursorVisible} />
-      </h1>
-    </div>
+    <>
+      <Head>
+        <title>ludwig lillieborg</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="ludwig.lillieb.org" />
+      </Head>
+      <div className={s.app}>
+        <h1 className={s.app__title}>
+          {displayedText.split('').map((char, i) => (
+            <ColoredLetter key={i} char={char} color={colors[i]} />
+          ))}
+          <Cursor visible={cursorVisible} />
+        </h1>
+      </div>
+    </>
   );
 }
