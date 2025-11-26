@@ -1,7 +1,6 @@
-import s from './App.module.scss';
-import '../../styling/index.scss';
+import s from '../src/components/App/App.module.scss';
 
-function App() {
+export default function Home() {
   return (
     <div className={s.app}>
       <h1 className={s.app__title}>
@@ -34,5 +33,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
