@@ -9,7 +9,7 @@ const COLOR_PALETTE_LIGHT = ['#ff6038', '#a066bb', '#f5a700', '#e84011', '#40e0d
 const FINAL_TEXT = 'ludwig lillieborg';
 const MISTAKE_TEXT = 'ludvi ';
 const BACKSPACE_TO_LENGTH = 3;
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 
 const TIMING = {
   INITIAL_DELAY: 2000,
@@ -28,9 +28,17 @@ const TOTAL_SECTIONS = 4;
 
 const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const getAnimationProps = (isDesktop, variant, customTransition = {}) => {
+const getAnimationProps = (isDesktop, variant, customTransition = {}, scrollDirection = 'down') => {
   if (isDesktop) {
-    return { ...variant, transition: customTransition };
+    const yOffset = variant.initial?.y || 0;
+    const adjustedVariant = {
+      ...variant,
+      initial: {
+        ...variant.initial,
+        y: scrollDirection === 'up' ? -Math.abs(yOffset) : Math.abs(yOffset)
+      }
+    };
+    return { ...adjustedVariant, transition: customTransition };
   }
   return { animate: { opacity: 1, y: 0 } };
 };
@@ -94,7 +102,7 @@ function useTypingEffect(startDelay) {
     } else if (phase === 'typing-correct' && displayedText.length < FINAL_TEXT.length) {
       timeout = setTimeout(() => {
         setDisplayedText(FINAL_TEXT.slice(0, displayedText.length + 1));
-      }, getRandomDelay(TIMING.TYPING_MIN, TIMING.TYPING_MAX));
+      }, getRandomDelay(TIMING.TYPING_MIN, TYPING.TYPING_MAX));
     } else if (phase === 'typing-correct' && displayedText === FINAL_TEXT) {
       timeout = setTimeout(() => setPhase('color-shifting'), TIMING.PAUSE_AFTER_NAME);
     } else if (phase === 'color-shifting' && colorShift < 5) {
@@ -238,22 +246,22 @@ const animationVariants = {
   }
 };
 
-const TextSection = ({ section, colors, isDesktop }) => (
+const TextSection = ({ section, colors, isDesktop, scrollDirection }) => (
   <motion.section
     className={s.cv__section}
     aria-labelledby={`${section.id}-heading`}
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 })}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 }, scrollDirection)}
   >
     <motion.div
       className={s.cv__sectionContent}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 })}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 }, scrollDirection)}
     >
       <h3 id={`${section.id}-heading`} className={s.cv__sectionTitle} style={{ color: colors[1] }}>
         {section.title}
       </h3>
       <motion.p
         className={s.cv__text}
-        {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.4 })}
+        {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.4 }, scrollDirection)}
       >
         {section.text}
       </motion.p>
@@ -261,15 +269,15 @@ const TextSection = ({ section, colors, isDesktop }) => (
   </motion.section>
 );
 
-const ExperienceSection = ({ colors, isDesktop }) => (
+const ExperienceSection = ({ colors, isDesktop, scrollDirection }) => (
   <motion.section
     className={s.cv__section}
     aria-labelledby="experience-heading"
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 })}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 }, scrollDirection)}
   >
     <motion.div
       className={s.cv__sectionContent}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 })}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 }, scrollDirection)}
     >
       <h3 id="experience-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
         {content.experience.title}
@@ -280,7 +288,7 @@ const ExperienceSection = ({ colors, isDesktop }) => (
             key={i}
             className={s.cv__experience}
             role="listitem"
-            {...getAnimationProps(isDesktop, animationVariants.experienceItem, { duration: 0.6, delay: 0.4 + i * 0.1 })}
+            {...getAnimationProps(isDesktop, animationVariants.experienceItem, { duration: 0.6, delay: 0.4 + i * 0.1 }, scrollDirection)}
           >
             <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
             <div className={s.cv__timelineContent}>
@@ -291,7 +299,7 @@ const ExperienceSection = ({ colors, isDesktop }) => (
               <p className={s.cv__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
               <motion.p
                 className={s.cv__text}
-                {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.6 + i * 0.1 })}
+                {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.6 + i * 0.1 }, scrollDirection)}
               >
                 {exp.description}
               </motion.p>
@@ -303,15 +311,15 @@ const ExperienceSection = ({ colors, isDesktop }) => (
   </motion.section>
 );
 
-const SkillsSection = ({ colors, isDesktop }) => (
+const SkillsSection = ({ colors, isDesktop, scrollDirection }) => (
   <motion.section
     className={s.cv__section}
     aria-labelledby="skills-heading"
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 })}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 }, scrollDirection)}
   >
     <motion.div
       className={s.cv__sectionContent}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 })}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 }, scrollDirection)}
     >
       <h3 id="skills-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
         {content.skills.title}
@@ -322,7 +330,7 @@ const SkillsSection = ({ colors, isDesktop }) => (
             key={skill}
             className={s.cv__skillItem}
             style={{ borderLeftColor: colors[1], backgroundColor: colors[1] + '15' }}
-            {...getAnimationProps(isDesktop, animationVariants.skillItem, { duration: 0.5, delay: 0.4 + i * 0.05 })}
+            {...getAnimationProps(isDesktop, animationVariants.skillItem, { duration: 0.5, delay: 0.4 + i * 0.05 }, scrollDirection)}
           >
             {skill}
           </motion.li>
@@ -339,6 +347,8 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const [scrollDirection, setScrollDirection] = useState('down');
+  const lastScrollTop = useRef(0);
   const isDesktop = useDesktopDetection();
 
   useEffect(() => {
@@ -346,6 +356,13 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
       if (!mainRef.current) return;
       const { scrollTop, clientHeight } = mainRef.current;
       const sectionIndex = Math.round(scrollTop / clientHeight);
+
+      if (scrollTop > lastScrollTop.current) {
+        setScrollDirection('down');
+      } else if (scrollTop < lastScrollTop.current) {
+        setScrollDirection('up');
+      }
+      lastScrollTop.current = scrollTop;
 
       setActiveSection(sectionIndex);
       setShowScrollDown(sectionIndex === 0);
@@ -443,10 +460,10 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
 
             <div className={s.cv__main} ref={mainRef} key={isDesktop ? 'desktop' : 'mobile'}>
               {content.sections.map((section) => (
-                <TextSection key={section.id} section={section} colors={colors} isDesktop={isDesktop} />
+                <TextSection key={section.id} section={section} colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
               ))}
-              <ExperienceSection colors={colors} isDesktop={isDesktop} />
-              <SkillsSection colors={colors} isDesktop={isDesktop} />
+              <ExperienceSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
+              <SkillsSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
             </div>
           </div>
         </motion.div>
