@@ -1,0 +1,67 @@
+@import '../../styling/variables.scss';
+
+.section {
+    height: auto;
+    max-height: none;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2.4rem;
+    position: relative;
+    scroll-snap-align: none;
+
+    @media (min-width: 901px) {
+        height: 100vh;
+        max-height: 100vh;
+        min-height: auto;
+        padding: 0 8rem;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+    }
+
+    @media (min-width: 1201px) {
+        padding: 0 12rem;
+    }
+
+    &__content {
+        width: 100%;
+        max-width: 90rem;
+    }
+
+    &__title {
+        font-size: 3.6rem;
+        margin: 0 0 2.4rem 0;
+        font-weight: 700;
+        position: relative;
+        padding-bottom: 0;
+
+        @media (min-width: 901px) {
+            font-size: 5.6rem;
+        }
+    }
+
+    &__text {
+        font-size: 1.6rem;
+        line-height: 1.6;
+        margin: 0;
+        color: #555;
+        font-family: 'JetBrains Mono', monospace;
+        transition: color 0.3s ease;
+        font-weight: 400;
+
+        :global(.light-mode) & {
+            color: #555;
+        }
+
+        :global(.dark-mode) & {
+            color: #ccc;
+        }
+
+        @media (min-width: 901px) {
+            font-size: 1.8rem;
+            line-height: 1.7;
+        }
+    }
+}

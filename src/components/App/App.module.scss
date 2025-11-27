@@ -393,17 +393,17 @@
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
+        object-fit: cover;
+        object-position: center;
         border: 3px solid rgba(255, 255, 255, 0.3);
-        transition: background-color 0.3s ease, border-color 0.3s ease;
+        transition: border-color 0.3s ease;
+        display: block;
 
         :global(.light-mode) & {
-            background: rgba(0, 0, 0, 0.05);
             border: 3px solid rgba(0, 0, 0, 0.1);
         }
 
         :global(.dark-mode) & {
-            background: rgba(255, 255, 255, 0.2);
             border: 3px solid rgba(255, 255, 255, 0.3);
         }
     }
@@ -441,7 +441,7 @@
         margin: 0;
         opacity: 0.7;
         font-weight: 400;
-        font-family: 'Inter', sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         color: $black;
         transition: color 0.3s ease;
 
@@ -450,7 +450,7 @@
         }
 
         :global(.dark-mode) & {
-            color: $white;
+            color: #ccc;
         }
 
         @media (min-width: 901px) {
@@ -466,7 +466,7 @@
         color: $black;
         transition: background-color 0.3s ease, color 0.3s ease;
         font-style: normal;
-        font-family: 'Inter', sans-serif;
+        font-family: 'JetBrains Mono', monospace;
 
         :global(.light-mode) & {
             background: rgba(0, 0, 0, 0.03);
@@ -500,7 +500,7 @@
 
     &__contactInfo {
         font-style: normal;
-        font-family: 'Inter', sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -514,17 +514,30 @@
         font-size: 1.8rem;
         color: #555;
         text-decoration: none;
-        transition: opacity 0.2s ease;
+        transition: opacity 0.2s ease, color 0.2s ease;
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font-family: 'JetBrains Mono', monospace;
+        cursor: pointer;
+        text-align: left;
 
         :global(.light-mode) & {
             color: #555;
         }
 
         :global(.dark-mode) & {
-            color: #aaa;
+            color: #ccc;
         }
 
         &:hover {
+            opacity: 0.7;
+        }
+
+        &:focus {
+            outline: 2px solid;
+            outline-offset: 4px;
             opacity: 0.7;
         }
 
@@ -595,7 +608,7 @@
         line-height: 1.6;
         margin: 0;
         color: #555;
-        font-family: 'Inter', sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         transition: color 0.3s ease;
         font-weight: 400;
 
@@ -604,7 +617,7 @@
         }
 
         :global(.dark-mode) & {
-            color: #aaa;
+            color: #ccc;
         }
 
         @media (min-width: 901px) {
@@ -709,7 +722,7 @@
         opacity: 0.6;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        font-family: 'Inter', sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         transition: color 0.3s ease;
 
 
@@ -726,7 +739,7 @@
         font-size: 1.6rem;
         margin: 0 0 0.8rem 0;
         font-weight: 600;
-        font-family: 'Inter', sans-serif;
+        font-family: 'JetBrains Mono', monospace;
     }
 
     &__skillsGrid {

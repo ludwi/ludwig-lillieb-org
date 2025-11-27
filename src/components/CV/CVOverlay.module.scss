@@ -1,0 +1,226 @@
+@import '../../styling/variables.scss';
+
+.cvOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    transition: background-color 0.3s ease;
+
+    :global(.light-mode) & {
+        background: $white;
+    }
+
+    :global(.dark-mode) & {
+        background: #222;
+    }
+
+    @media (min-width: 901px) {
+        flex-direction: row;
+        overflow: hidden;
+        -webkit-overflow-scrolling: auto;
+        overscroll-behavior: auto;
+        touch-action: auto;
+    }
+
+    &__controls {
+        position: fixed;
+        top: 0.8rem;
+        right: 0.8rem;
+        display: flex;
+        gap: 0.8rem;
+        z-index: 101;
+
+        @media (min-width: 768px) {
+            top: 1.6rem;
+            right: 1.6rem;
+        }
+    }
+
+    &__toggle {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        border: 0.2rem solid transparent;
+        background: transparent;
+        font-size: 2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        color: $black;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        &:active {
+            transform: scale(0.92);
+        }
+
+        :global(.light-mode) & {
+            color: $black;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        :global(.dark-mode) & {
+            color: $white;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+
+    &__mainWrapper {
+        flex: 1;
+        position: relative;
+    }
+
+    &__scrollProgress {
+        display: none;
+
+        @media (min-width: 901px) {
+            display: block;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 0.4rem;
+            z-index: 102;
+        }
+    }
+
+    &__scrollFill {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        background: #ff6038;
+        transition: background 0.3s ease;
+
+        :global(.dark-mode) & {
+            background: #ffda45;
+        }
+    }
+
+    &__main {
+        width: 100%;
+        flex: 1;
+        height: auto;
+        padding: 0;
+        overflow-y: visible;
+        overflow-x: hidden;
+        scroll-snap-type: none;
+        transition: background-color 0.3s ease;
+
+        :global(.light-mode) & {
+            background: $white;
+        }
+
+        :global(.dark-mode) & {
+            background: #222;
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        @media (min-width: 901px) {
+            height: 100%;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    &__scrollIndicatorDown {
+        display: none;
+
+        @media (min-width: 901px) {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease, color 0.2s ease, visibility 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+
+            &[style*="opacity: 0"] {
+                pointer-events: none;
+                visibility: hidden;
+            }
+
+            &:not([style*="opacity: 0"]) {
+                pointer-events: auto;
+            }
+
+            &:hover {
+                color: rgba(0, 0, 0, 0.5);
+            }
+
+            :global(.dark-mode) & {
+                color: rgba(255, 255, 255, 0.3);
+
+                &:hover {
+                    color: rgba(255, 255, 255, 0.5);
+                }
+            }
+        }
+    }
+
+    &__scrollChevron {
+        font-size: 4.8rem;
+        animation: bounceDown 3.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+}
+
+@keyframes bounceDown {
+    0%, 20% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    45% {
+        transform: translateY(3rem);
+        opacity: 0;
+    }
+    46% {
+        transform: translateY(-1rem);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
