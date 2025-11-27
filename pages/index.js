@@ -1,11 +1,11 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdLightMode, MdDarkMode, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
+import { MdLightMode, MdDarkMode, MdKeyboardArrowDown, MdKeyboardArrowUp, MdEmail, MdPhone } from 'react-icons/md';
 import s from '../src/components/App/App.module.scss';
 
 const COLOR_PALETTE_DARK = ['#ff6038', '#ffda45', '#f5a700', '#e84011', '#40e0d0'];
-const COLOR_PALETTE_LIGHT = ['#ff6038', '#a066bb', '#f5a700', '#e84011', '#40e0d0'];
+const COLOR_PALETTE_LIGHT = ['#e63946', '#f77f00', '#06a77d', '#6930c3', '#0077b6'];
 const FINAL_TEXT = 'ludwig lillieborg';
 const MISTAKE_TEXT = 'ludvi ';
 const BACKSPACE_TO_LENGTH = 3;
@@ -24,23 +24,99 @@ const TIMING = {
 };
 
 const DESKTOP_BREAKPOINT = 900;
-const TOTAL_SECTIONS = 4;
+const TOTAL_SECTIONS = 6;
+const ANIMATION_DELAYS = {
+  SECTION: 1,
+  CONTENT: 0.8,
+  ITEM_BASE: 0.4,
+  ITEM_STAGGER: 0.15
+};
 
 const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const getAnimationProps = (isDesktop, variant, customTransition = {}, scrollDirection = 'down') => {
-  if (isDesktop) {
-    const yOffset = variant.initial?.y || 0;
-    const adjustedVariant = {
-      ...variant,
-      initial: {
-        ...variant.initial,
-        y: scrollDirection === 'up' ? -Math.abs(yOffset) : Math.abs(yOffset)
+  const yOffset = variant.initial?.y || 0;
+  return {
+    ...variant,
+    initial: {
+      ...variant.initial,
+      y: isDesktop ? (scrollDirection === 'up' ? -Math.abs(yOffset) : Math.abs(yOffset)) : Math.abs(yOffset)
+    },
+    viewport: {
+      ...variant.viewport,
+      once: !isDesktop
+    },
+    transition: customTransition
+  };
+};
+
+const createProfileVariant = (isDesktop, scrollDirection, isFirstLoad) => {
+  const easeSmooth = [0.25, 0.46, 0.45, 0.94];
+  const easeBounce = [0.34, 1.56, 0.64, 1];
+
+  if (isFirstLoad && isDesktop) {
+    return {
+      image: {
+        initial: { opacity: 0, scale: 0.5, rotate: -180 },
+        animate: { opacity: 1, scale: 1, rotate: 0 },
+        transition: { duration: 1.2, delay: 0.6, ease: easeBounce }
+      },
+      name: {
+        initial: { opacity: 0, x: scrollDirection === 'up' ? -50 : 50 },
+        animate: { opacity: 1, x: 0 },
+        transition: { duration: 0.8, delay: 0.9, ease: easeSmooth }
+      },
+      role: {
+        initial: { opacity: 0, x: scrollDirection === 'up' ? -30 : 30 },
+        animate: { opacity: 1, x: 0 },
+        transition: { duration: 0.6, delay: 1.1, ease: easeSmooth }
       }
     };
-    return { ...adjustedVariant, transition: customTransition };
   }
-  return { animate: { opacity: 1, y: 0 } };
+
+  if (isDesktop) {
+    return {
+      image: {
+        initial: { opacity: 0, scale: 0.5, rotate: -180 },
+        whileInView: { opacity: 1, scale: 1, rotate: 0 },
+        viewport: { once: false, amount: 0.5 },
+        transition: { duration: 1.2, ease: easeBounce }
+      },
+      name: {
+        initial: { opacity: 0, x: scrollDirection === 'up' ? -50 : 50 },
+        whileInView: { opacity: 1, x: 0 },
+        viewport: { once: false, amount: 0.5 },
+        transition: { duration: 0.8, ease: easeSmooth }
+      },
+      role: {
+        initial: { opacity: 0, x: scrollDirection === 'up' ? -30 : 30 },
+        whileInView: { opacity: 1, x: 0 },
+        viewport: { once: false, amount: 0.5 },
+        transition: { duration: 0.6, ease: easeSmooth }
+      }
+    };
+  }
+
+  return {
+    image: {
+      initial: { opacity: 0, x: 50 },
+      whileInView: { opacity: 1, x: 0 },
+      viewport: { once: true, amount: 0.5 },
+      transition: { duration: 0.8, ease: easeSmooth }
+    },
+    name: {
+      initial: { opacity: 0, x: 50 },
+      whileInView: { opacity: 1, x: 0 },
+      viewport: { once: true, amount: 0.5 },
+      transition: { duration: 0.8, delay: 0.2, ease: easeSmooth }
+    },
+    role: {
+      initial: { opacity: 0, x: 50 },
+      whileInView: { opacity: 1, x: 0 },
+      viewport: { once: true, amount: 0.5 },
+      transition: { duration: 0.6, delay: 0.3, ease: easeSmooth }
+    }
+  };
 };
 
 function useTypingEffect(startDelay) {
@@ -104,14 +180,10 @@ function useTypingEffect(startDelay) {
         setDisplayedText(FINAL_TEXT.slice(0, displayedText.length + 1));
       }, getRandomDelay(TIMING.TYPING_MIN, TIMING.TYPING_MAX));
     } else if (phase === 'typing-correct' && displayedText === FINAL_TEXT) {
-      timeout = setTimeout(() => setPhase('color-shifting'), TIMING.PAUSE_AFTER_NAME);
-    } else if (phase === 'color-shifting' && colorShift < 5) {
-      timeout = setTimeout(() => setColorShift(colorShift + 1), 250);
-    } else if (phase === 'color-shifting' && colorShift === 5) {
       timeout = setTimeout(() => {
         setPhase('selecting');
         setIsSelected(true);
-      }, 1000);
+      }, TIMING.PAUSE_AFTER_NAME);
     } else if (phase === 'selecting') {
       timeout = setTimeout(() => {
         setPhase('deleting');
@@ -166,18 +238,20 @@ const Cursor = ({ visible }) => (
 );
 
 const content = {
+  name: 'Ludwig Lillieborg',
   role: 'Lorem Ipsum',
   email: 'lorem@ipsum.com',
+  phone: '+46 123 456 789',
   location: 'Lorem, Ipsum',
   sections: [
     {
-      id: 'about',
-      title: 'Om',
+      id: 'hello',
+      title: 'Hej',
       text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
     },
     {
-      id: 'personal',
-      title: 'Privat',
+      id: 'about',
+      title: 'Om',
       text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.'
     }
   ],
@@ -201,6 +275,9 @@ const content = {
   skills: {
     title: 'Kompetenser',
     items: ['Lorem', 'Ipsum', 'Dolor', 'Sit', 'Amet', 'Consectetur', 'Adipiscing', 'Elit']
+  },
+  contact: {
+    title: 'Kontakt'
   }
 };
 
@@ -246,22 +323,114 @@ const animationVariants = {
   }
 };
 
+const ProfileSection = ({ colors, isDesktop, scrollDirection, isFirstLoad }) => {
+  const variants = createProfileVariant(isDesktop, scrollDirection, isFirstLoad);
+  const [letterColors, setLetterColors] = useState(() =>
+    content.name.split('').map((_, i) => i % colors.length)
+  );
+  const changedLettersRef = useRef(new Set());
+
+  useEffect(() => {
+    const startDelay = isFirstLoad && isDesktop ? 1500 : 800;
+    let intervalId;
+
+    const startTimer = setTimeout(() => {
+      intervalId = setInterval(() => {
+        const unchanged = [];
+        for (let i = 0; i < content.name.length; i++) {
+          if (!changedLettersRef.current.has(i)) {
+            unchanged.push(i);
+          }
+        }
+
+        if (unchanged.length === 0) {
+          clearInterval(intervalId);
+          return;
+        }
+
+        const randomIndex = unchanged[Math.floor(Math.random() * unchanged.length)];
+
+        setLetterColors(current => {
+          const newColors = [...current];
+          const currentColor = current[randomIndex];
+          const prevColor = randomIndex > 0 ? current[randomIndex - 1] : -1;
+          const nextColor = randomIndex < content.name.length - 1 ? current[randomIndex + 1] : -1;
+
+          const availableColors = [];
+          for (let i = 0; i < colors.length; i++) {
+            if (i !== prevColor && i !== nextColor && i !== currentColor) {
+              availableColors.push(i);
+            }
+          }
+
+          if (availableColors.length > 0) {
+            newColors[randomIndex] = availableColors[Math.floor(Math.random() * availableColors.length)];
+          }
+          return newColors;
+        });
+
+        changedLettersRef.current.add(randomIndex);
+      }, 250);
+    }, startDelay);
+
+    return () => {
+      clearTimeout(startTimer);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isFirstLoad, isDesktop, colors.length]);
+
+  return (
+    <motion.section
+      className={s.cv__section}
+      aria-labelledby="profile-heading"
+      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
+    >
+      <motion.div
+        className={s.cv__sectionContent}
+        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+      >
+        <div className={s.cv__profile}>
+          <motion.div className={s.cv__imageContainer} {...variants.image}>
+            <div className={s.cv__image} role="img" aria-label="Profile photo placeholder" />
+          </motion.div>
+          <div className={s.cv__profileInfo}>
+            <motion.h2 id="profile-heading" className={s.cv__name} {...variants.name}>
+              {content.name.split('').map((char, i) => (
+                <span
+                  key={i}
+                  style={{
+                    color: colors[letterColors[i]],
+                    transition: 'color 0.3s ease'
+                  }}
+                >
+                  {char}
+                </span>
+              ))}
+            </motion.h2>
+            <motion.p className={s.cv__role} {...variants.role}>{content.role}</motion.p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.section>
+  );
+};
+
 const TextSection = ({ section, colors, isDesktop, scrollDirection }) => (
   <motion.section
     className={s.cv__section}
     aria-labelledby={`${section.id}-heading`}
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 }, scrollDirection)}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
   >
     <motion.div
       className={s.cv__sectionContent}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 }, scrollDirection)}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
     >
       <h3 id={`${section.id}-heading`} className={s.cv__sectionTitle} style={{ color: colors[1] }}>
         {section.title}
       </h3>
       <motion.p
         className={s.cv__text}
-        {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.4 }, scrollDirection)}
+        {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: ANIMATION_DELAYS.ITEM_BASE }, scrollDirection)}
       >
         {section.text}
       </motion.p>
@@ -269,57 +438,67 @@ const TextSection = ({ section, colors, isDesktop, scrollDirection }) => (
   </motion.section>
 );
 
-const ExperienceSection = ({ colors, isDesktop, scrollDirection }) => (
-  <motion.section
-    className={s.cv__section}
-    aria-labelledby="experience-heading"
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 }, scrollDirection)}
-  >
-    <motion.div
-      className={s.cv__sectionContent}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 }, scrollDirection)}
+const ExperienceSection = ({ colors, isDesktop, scrollDirection }) => {
+  const itemDurations = [0.5, 0.8];
+
+  return (
+    <motion.section
+      className={s.cv__section}
+      aria-labelledby="experience-heading"
+      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
     >
-      <h3 id="experience-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
-        {content.experience.title}
-      </h3>
-      <div className={s.cv__timeline} role="list" aria-label="Work experience timeline">
-        {content.experience.items.map((exp, i) => (
-          <motion.div
-            key={i}
-            className={s.cv__experience}
-            role="listitem"
-            {...getAnimationProps(isDesktop, animationVariants.experienceItem, { duration: 0.6, delay: 0.4 + i * 0.1 }, scrollDirection)}
-          >
-            <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
-            <div className={s.cv__timelineContent}>
-              <div className={s.cv__itemHeader}>
-                <h4 className={s.cv__itemTitle}>{exp.title}</h4>
-                <span className={s.cv__itemDate}>{exp.period}</span>
-              </div>
-              <p className={s.cv__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
-              <motion.p
-                className={s.cv__text}
-                {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: 0.6 + i * 0.1 }, scrollDirection)}
+      <motion.div
+        className={s.cv__sectionContent}
+        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+      >
+        <h3 id="experience-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
+          {content.experience.title}
+        </h3>
+        <div className={s.cv__timeline} role="list" aria-label="Work experience timeline">
+          {content.experience.items.map((exp, i) => {
+            const duration = itemDurations[i % itemDurations.length];
+            const itemDelay = ANIMATION_DELAYS.ITEM_BASE + i * ANIMATION_DELAYS.ITEM_STAGGER;
+            const textDelay = itemDelay + 0.2;
+
+            return (
+              <motion.div
+                key={i}
+                className={s.cv__experience}
+                role="listitem"
+                {...getAnimationProps(isDesktop, animationVariants.experienceItem, { duration, delay: itemDelay }, scrollDirection)}
               >
-                {exp.description}
-              </motion.p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  </motion.section>
-);
+                <div className={s.cv__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
+                <div className={s.cv__timelineContent}>
+                  <div className={s.cv__itemHeader}>
+                    <h4 className={s.cv__itemTitle}>{exp.title}</h4>
+                    <span className={s.cv__itemDate}>{exp.period}</span>
+                  </div>
+                  <p className={s.cv__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
+                  <motion.p
+                    className={s.cv__text}
+                    {...getAnimationProps(isDesktop, animationVariants.text, { duration: duration + 0.15, delay: textDelay }, scrollDirection)}
+                  >
+                    {exp.description}
+                  </motion.p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </motion.div>
+    </motion.section>
+  );
+};
 
 const SkillsSection = ({ colors, isDesktop, scrollDirection }) => (
   <motion.section
     className={s.cv__section}
     aria-labelledby="skills-heading"
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: 1 }, scrollDirection)}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
   >
     <motion.div
       className={s.cv__sectionContent}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: 0.8, delay: 0.2 }, scrollDirection)}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
     >
       <h3 id="skills-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
         {content.skills.title}
@@ -330,12 +509,47 @@ const SkillsSection = ({ colors, isDesktop, scrollDirection }) => (
             key={skill}
             className={s.cv__skillItem}
             style={{ borderLeftColor: colors[1], backgroundColor: colors[1] + '15' }}
-            {...getAnimationProps(isDesktop, animationVariants.skillItem, { duration: 0.5, delay: 0.4 + i * 0.05 }, scrollDirection)}
+            {...getAnimationProps(isDesktop, animationVariants.skillItem, { duration: 0.5, delay: ANIMATION_DELAYS.ITEM_BASE + i * 0.05 }, scrollDirection)}
           >
             {skill}
           </motion.li>
         ))}
       </ul>
+    </motion.div>
+  </motion.section>
+);
+
+const ContactSection = ({ colors, isDesktop, scrollDirection }) => (
+  <motion.section
+    className={s.cv__section}
+    aria-labelledby="contact-heading"
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
+  >
+    <motion.div
+      className={s.cv__sectionContent}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+    >
+      <h3 id="contact-heading" className={s.cv__sectionTitle} style={{ color: colors[1] }}>
+        {content.contact.title}
+      </h3>
+      <div className={s.cv__contactInfo}>
+        <motion.a
+          href={`mailto:${content.email}`}
+          className={s.cv__contactLink}
+          {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: ANIMATION_DELAYS.ITEM_BASE }, scrollDirection)}
+        >
+          <MdEmail className={s.cv__contactIcon} />
+          <span>{content.email}</span>
+        </motion.a>
+        <motion.a
+          href={`tel:${content.phone.replace(/\s/g, '')}`}
+          className={s.cv__contactLink}
+          {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.8, delay: 0.5 }, scrollDirection)}
+        >
+          <MdPhone className={s.cv__contactIcon} />
+          <span>{content.phone}</span>
+        </motion.a>
+      </div>
     </motion.div>
   </motion.section>
 );
@@ -350,6 +564,16 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
   const [scrollDirection, setScrollDirection] = useState('down');
   const lastScrollTop = useRef(0);
   const isDesktop = useDesktopDetection();
+  const isFirstLoad = useRef(true);
+
+  useEffect(() => {
+    if (visible && isFirstLoad.current) {
+      const timer = setTimeout(() => {
+        isFirstLoad.current = false;
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -407,45 +631,16 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
             </button>
           </motion.div>
 
-          <motion.aside className={s.cv__sidebar} aria-label="Personal information" {...animationVariants.sidebar}>
-            <motion.div className={s.cv__profile} {...animationVariants.sidebarItem} transition={{ delay: 0.5, duration: 0.5 }}>
-              <div className={s.cv__imageContainer}>
-                <div className={s.cv__image} role="img" aria-label="Profile photo placeholder" />
-              </div>
-              <h2 className={s.cv__name}>
-                {'Ludwig Lillieborg'.split('').map((char, i) => (
-                  <span key={i} style={{ color: colors[i % colors.length] }}>{char}</span>
-                ))}
-              </h2>
-              <p className={s.cv__role}>{content.role}</p>
-            </motion.div>
-
-            <motion.address className={s.cv__contact} {...animationVariants.sidebarItem} transition={{ delay: 0.65, duration: 0.5 }}>
-              <p>{content.email}</p>
-              <p>{content.location}</p>
-            </motion.address>
-          </motion.aside>
-
           <div className={s.cv__mainWrapper}>
             <div className={s.cv__scrollProgress}>
-              {Array.from({ length: TOTAL_SECTIONS }, (_, i) => (
-                <div
-                  key={i}
-                  className={activeSection === i ? s.cv__scrollDotActive : s.cv__scrollDot}
-                />
-              ))}
+              <motion.div
+                className={s.cv__scrollFill}
+                animate={{
+                  height: `${(activeSection / (TOTAL_SECTIONS - 1)) * 100}%`
+                }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              />
             </div>
-
-            <motion.button
-              className={s.cv__scrollIndicatorUp}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: showScrollUp ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={() => scrollToSection('prev')}
-              aria-label="Scroll to previous section"
-            >
-              <MdKeyboardArrowUp className={s.cv__scrollChevron} />
-            </motion.button>
 
             <motion.button
               className={s.cv__scrollIndicatorDown}
@@ -459,11 +654,19 @@ function CVOverlay({ visible, colors, theme, setTheme }) {
             </motion.button>
 
             <div className={s.cv__main} ref={mainRef} key={isDesktop ? 'desktop' : 'mobile'}>
+              <ProfileSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} isFirstLoad={isFirstLoad.current} />
               {content.sections.map((section) => (
-                <TextSection key={section.id} section={section} colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
+                <TextSection
+                  key={section.id}
+                  section={section}
+                  colors={colors}
+                  isDesktop={isDesktop}
+                  scrollDirection={scrollDirection}
+                />
               ))}
               <ExperienceSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
               <SkillsSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
+              <ContactSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
             </div>
           </div>
         </motion.div>
@@ -502,7 +705,7 @@ export default function Home() {
             <ColoredLetter
               key={i}
               char={char}
-              color={colors[(i - colorShift + colors.length) % colors.length]}
+              color={colors[i % colors.length]}
               isSelected={isSelected}
             />
           ))}
