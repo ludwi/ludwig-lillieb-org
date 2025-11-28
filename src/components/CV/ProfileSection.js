@@ -35,17 +35,8 @@ export const ProfileSection = ({ colors, isDesktop, scrollDirection, isFirstLoad
             />
           </motion.div>
           <div className={s.profileSection__profileInfo}>
-            <motion.h2 id="profile-heading" className={s.profileSection__name} {...variants.name}>
-              {content.name.split('').map((char, i) => (
-                <span
-                  key={i}
-                  style={{
-                    color: colors[i % colors.length]
-                  }}
-                >
-                  {char}
-                </span>
-              ))}
+            <motion.h2 id="profile-heading" className={s.profileSection__name} {...variants.name} style={{ color: colors[1] }}>
+              {content.name}
             </motion.h2>
             <motion.p className={s.profileSection__role} {...variants.role}>{content.role}</motion.p>
           </div>

@@ -54,17 +54,7 @@
         font-size: 2.8rem;
         margin: 0;
         font-weight: 700;
-        color: $black;
-        transition: color 0.3s ease;
         line-height: 1.2;
-
-        :global(.light-mode) & {
-            color: $black;
-        }
-
-        :global(.dark-mode) & {
-            color: $white;
-        }
 
         @media (min-width: 901px) {
             font-size: 3.6rem;

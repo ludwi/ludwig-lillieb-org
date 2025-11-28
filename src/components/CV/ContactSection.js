@@ -6,7 +6,7 @@ import { decode, handleContactClick } from '../../utils/obfuscate';
 import s from './ContactSection.module.scss';
 import sectionStyles from './Section.module.scss';
 
-export const ContactSection = ({ colors, isDesktop, scrollDirection }) => {
+export const ContactSection = ({ colors, isDesktop, scrollDirection, sectionIndex }) => {
   const email = decode(content.email);
   const phone = decode(content.phone);
 
@@ -14,11 +14,11 @@ export const ContactSection = ({ colors, isDesktop, scrollDirection }) => {
     <motion.section
       className={sectionStyles.section}
       aria-labelledby="contact-heading"
-      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
+      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection, sectionIndex)}
     >
       <motion.div
         className={sectionStyles.section__content}
-        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection, sectionIndex)}
       >
         <h3 id="contact-heading" className={sectionStyles.section__title} style={{ color: colors[1] }}>
           {content.contact.title}

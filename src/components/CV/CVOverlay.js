@@ -16,6 +16,7 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
   const [activeSection, setActiveSection] = useState(0);
   const [scrollDirection, setScrollDirection] = useState('down');
   const [indicatorReady, setIndicatorReady] = useState(false);
+  const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
   const lastScrollTop = useRef(0);
   const isDesktop = useDesktopDetection();
   const isFirstLoad = useRef(true);
@@ -34,9 +35,16 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
       const timer = setTimeout(() => {
         setIndicatorReady(true);
       }, 2000);
-      return () => clearTimeout(timer);
+      const animTimer = setTimeout(() => {
+        setHasAnimatedIn(true);
+      }, 1800);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(animTimer);
+      };
     } else {
       setIndicatorReady(false);
+      setHasAnimatedIn(false);
     }
   }, [visible]);
 
@@ -99,14 +107,22 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
       {visible && (
         <motion.div
           className={s.cvOverlay}
-          initial={{ clipPath: 'circle(0% at 0% 100%)' }}
-          animate={{ clipPath: 'circle(150% at 0% 100%)' }}
-          exit={{ clipPath: 'circle(0% at 0% 100%)' }}
-          transition={{ type: 'spring', stiffness: 80, damping: 20, duration: 1.2 }}
+          initial={{ y: '-100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '-100%' }}
+          transition={{
+            duration: 0.6,
+            ease: [0.75, 0, 0.25, 1]
+          }}
           role="main"
           aria-label="Curriculum Vitae"
         >
-          <motion.div className={s.cvOverlay__controls} {...animationVariants.controls}>
+          <motion.div
+            className={s.cvOverlay__controls}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+          >
             <button
               onClick={toggleTheme}
               className={s.cvOverlay__toggle}
@@ -117,23 +133,34 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
           </motion.div>
 
           <div className={s.cvOverlay__mainWrapper}>
-            <div className={s.cvOverlay__scrollProgress} ref={progressRef} onClick={handleProgressClick}>
-              <motion.div
-                className={s.cvOverlay__scrollFill}
-                animate={{
-                  height: `${(activeSection / (TOTAL_SECTIONS - 1)) * 100}%`
-                }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                drag="y"
-                dragConstraints={{ top: 0, bottom: 0 }}
-                dragElastic={0}
-                dragMomentum={false}
-                onDrag={handleProgressDrag}
-                _dragX={0}
-                style={{ cursor: 'grab', touchAction: 'none' }}
-                whileDrag={{ cursor: 'grabbing' }}
-              />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.2, duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+              style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)' }}
+            >
+              <div
+                className={s.cvOverlay__scrollProgress}
+                ref={progressRef}
+                onClick={handleProgressClick}
+              >
+                <motion.div
+                  className={s.cvOverlay__scrollFill}
+                  animate={{
+                    height: `${(activeSection / (TOTAL_SECTIONS - 1)) * 100}%`
+                  }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  drag="y"
+                  dragConstraints={{ top: 0, bottom: 0 }}
+                  dragElastic={0}
+                  dragMomentum={false}
+                  onDrag={handleProgressDrag}
+                  _dragX={0}
+                  style={{ cursor: 'grab', touchAction: 'none' }}
+                  whileDrag={{ cursor: 'grabbing' }}
+                />
+              </div>
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -151,18 +178,19 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
 
             <div className={s.cvOverlay__main} ref={mainRef} key={isDesktop ? 'desktop' : 'mobile'}>
               <ProfileSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} isFirstLoad={isFirstLoad.current} />
-              {content.sections.map((section) => (
+              {content.sections.map((section, idx) => (
                 <TextSection
                   key={section.id}
                   section={section}
                   colors={colors}
                   isDesktop={isDesktop}
                   scrollDirection={scrollDirection}
+                  sectionIndex={idx + 1}
                 />
               ))}
-              <ExperienceSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
-              <SkillsSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
-              <ContactSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} />
+              <ExperienceSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} sectionIndex={content.sections.length + 1} />
+              <SkillsSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} sectionIndex={content.sections.length + 2} />
+              <ContactSection colors={colors} isDesktop={isDesktop} scrollDirection={scrollDirection} sectionIndex={content.sections.length + 3} />
             </div>
           </div>
         </motion.div>

@@ -4,18 +4,18 @@ import { getAnimationProps } from '../../utils';
 import s from './ExperienceSection.module.scss';
 import sectionStyles from './Section.module.scss';
 
-export const ExperienceSection = ({ colors, isDesktop, scrollDirection }) => {
+export const ExperienceSection = ({ colors, isDesktop, scrollDirection, sectionIndex }) => {
   const itemDurations = [0.5, 0.8];
 
   return (
     <motion.section
       className={sectionStyles.section}
       aria-labelledby="experience-heading"
-      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
+      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection, sectionIndex)}
     >
       <motion.div
         className={sectionStyles.section__content}
-        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection, sectionIndex)}
       >
         <h3 id="experience-heading" className={sectionStyles.section__title} style={{ color: colors[1] }}>
           {content.experience.title}

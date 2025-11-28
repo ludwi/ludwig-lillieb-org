@@ -4,15 +4,15 @@ import { getAnimationProps } from '../../utils';
 import s from './SkillsSection.module.scss';
 import sectionStyles from './Section.module.scss';
 
-export const SkillsSection = ({ colors, isDesktop, scrollDirection }) => (
+export const SkillsSection = ({ colors, isDesktop, scrollDirection, sectionIndex }) => (
   <motion.section
     className={sectionStyles.section}
     aria-labelledby="skills-heading"
-    {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
+    {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection, sectionIndex)}
   >
     <motion.div
       className={sectionStyles.section__content}
-      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+      {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection, sectionIndex)}
     >
       <h3 id="skills-heading" className={sectionStyles.section__title} style={{ color: colors[1] }}>
         {content.skills.title}

@@ -2,15 +2,21 @@ import { EASING } from '../constants';
 
 export const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-export const getAnimationProps = (isDesktop, variant, customTransition = {}, scrollDirection = 'down') => {
+export const getAnimationProps = (isDesktop, variant, customTransition = {}, scrollDirection = 'down', sectionIndex = 0) => {
   const yOffset = variant.initial?.y || 0;
 
   // On mobile, use animate instead of whileInView
   if (!isDesktop) {
+    // First section (profile) has no additional delay
+    // Other sections wait for profile animation to finish (1.2s)
+    const baseDelay = sectionIndex > 0 ? 1.2 : 0;
     const props = {
       initial: variant.initial,
       animate: variant.whileInView,
-      transition: customTransition
+      transition: {
+        ...customTransition,
+        delay: (customTransition.delay || 0) + baseDelay
+      }
     };
     return props;
   }
