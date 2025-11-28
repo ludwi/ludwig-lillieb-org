@@ -17,7 +17,7 @@
         font-size: 1.8rem;
         color: #555;
         text-decoration: none;
-        transition: opacity 0.2s ease, color 0.2s ease;
+        transition: color 0.2s ease;
         background: none;
         border: none;
         padding: 0;
@@ -28,20 +28,23 @@
 
         :global(.light-mode) & {
             color: #555;
+
+            &:hover {
+                color: #222;
+            }
         }
 
         :global(.dark-mode) & {
             color: #ccc;
-        }
 
-        &:hover {
-            opacity: 0.7;
+            &:hover {
+                color: #fff;
+            }
         }
 
         &:focus {
             outline: 2px solid;
             outline-offset: 4px;
-            opacity: 0.7;
         }
 
         @media (min-width: 901px) {

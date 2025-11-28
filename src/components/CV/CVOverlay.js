@@ -10,6 +10,7 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
   const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
   const mainRef = useRef(null);
+  const progressRef = useRef(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
@@ -73,6 +74,26 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
     mainRef.current.scrollTo({ top: Math.max(0, targetSection * clientHeight), behavior: 'smooth' });
   }, []);
 
+  const handleProgressClick = useCallback((e) => {
+    if (!mainRef.current) return;
+    const { clientHeight } = mainRef.current;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickY = e.clientY - rect.top;
+    const percentage = clickY / rect.height;
+    const targetSection = Math.round(percentage * (TOTAL_SECTIONS - 1));
+    mainRef.current.scrollTo({ top: targetSection * clientHeight, behavior: 'smooth' });
+  }, []);
+
+  const handleProgressDrag = useCallback((event, info) => {
+    if (!mainRef.current || !progressRef.current) return;
+    const { clientHeight } = mainRef.current;
+    const rect = progressRef.current.getBoundingClientRect();
+    const dragY = info.point.y - rect.top;
+    const dragPercentage = Math.max(0, Math.min(1, dragY / rect.height));
+    const targetSection = Math.round(dragPercentage * (TOTAL_SECTIONS - 1));
+    mainRef.current.scrollTo({ top: targetSection * clientHeight, behavior: 'auto' });
+  }, []);
+
   return (
     <AnimatePresence>
       {visible && (
@@ -96,13 +117,21 @@ export function CVOverlay({ visible, colors, theme, setTheme }) {
           </motion.div>
 
           <div className={s.cvOverlay__mainWrapper}>
-            <div className={s.cvOverlay__scrollProgress}>
+            <div className={s.cvOverlay__scrollProgress} ref={progressRef} onClick={handleProgressClick}>
               <motion.div
                 className={s.cvOverlay__scrollFill}
                 animate={{
                   height: `${(activeSection / (TOTAL_SECTIONS - 1)) * 100}%`
                 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={0}
+                dragMomentum={false}
+                onDrag={handleProgressDrag}
+                _dragX={0}
+                style={{ cursor: 'grab', touchAction: 'none' }}
+                whileDrag={{ cursor: 'grabbing' }}
               />
             </div>
 

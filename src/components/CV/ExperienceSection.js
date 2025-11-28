@@ -33,7 +33,7 @@ export const ExperienceSection = ({ colors, isDesktop, scrollDirection }) => {
                 role="listitem"
                 {...getAnimationProps(isDesktop, animationVariants.experienceItem, { duration, delay: itemDelay }, scrollDirection)}
               >
-                <div className={s.experienceSection__timelineDot} style={{ backgroundColor: colors[2] }} aria-hidden="true" />
+                <div className={s.experienceSection__timelineDot} style={{ backgroundColor: 'rgb(247, 127, 0)' }} aria-hidden="true" />
                 <div className={s.experienceSection__timelineContent}>
                   <div className={s.experienceSection__itemHeader}>
                     <h4 className={s.experienceSection__itemTitle}>{exp.title}</h4>

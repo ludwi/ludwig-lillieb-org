@@ -1,6 +1,6 @@
 // ========== COLOR PALETTES ==========
 export const COLOR_PALETTE_DARK = ['#ff6038', '#ffda45', '#f5a700', '#e84011', '#40e0d0'];
-export const COLOR_PALETTE_LIGHT = ['#e63946', '#f77f00', '#06a77d', '#6930c3', '#0077b6'];
+export const COLOR_PALETTE_LIGHT = ['#e63946', '#ff6038', '#06a77d', '#6930c3', '#0077b6'];
 
 // ========== TYPING ANIMATION CONFIG ==========
 export const FINAL_TEXT = 'ludwig lillieborg';

@@ -30,8 +30,6 @@ export const ContactSection = ({ colors, isDesktop, scrollDirection }) => {
             <motion.button
               onClick={() => handleContactClick('email', content.email)}
               className={s.contactSection__contactLink}
-              whileHover={{ opacity: 0.7 }}
-              transition={{ duration: 0.15 }}
             >
               <MdEmail className={s.contactSection__contactIcon} />
               <span>{email}</span>
@@ -43,8 +41,6 @@ export const ContactSection = ({ colors, isDesktop, scrollDirection }) => {
             <motion.button
               onClick={() => handleContactClick('phone', content.phone)}
               className={s.contactSection__contactLink}
-              whileHover={{ opacity: 0.7 }}
-              transition={{ duration: 0.15 }}
             >
               <MdPhone className={s.contactSection__contactIcon} />
               <span>{phone}</span>

@@ -107,6 +107,28 @@
             width: 0.4rem;
             background: #333;
             z-index: 102;
+            cursor: pointer;
+            transition: width 0.2s ease, background-color 0.2s ease;
+
+            :global(.light-mode) & {
+                background: #ddd;
+
+                &:hover {
+                    background: #ccc;
+                }
+            }
+
+            :global(.dark-mode) & {
+                background: #333;
+
+                &:hover {
+                    background: #444;
+                }
+            }
+
+            &:hover {
+                width: 0.6rem;
+            }
         }
     }
 
@@ -117,6 +139,11 @@
         width: 100%;
         background: #ff6038;
         transition: background 0.3s ease;
+        cursor: grab;
+
+        &:active {
+            cursor: grabbing;
+        }
 
         :global(.dark-mode) & {
             background: #ffda45;
