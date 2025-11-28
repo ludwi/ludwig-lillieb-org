@@ -100,17 +100,19 @@
         @media (min-width: 901px) {
             display: block;
             position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
+            left: 1.6rem;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 25vh;
             width: 0.4rem;
+            background: #333;
             z-index: 102;
         }
     }
 
     &__scrollFill {
         position: absolute;
-        right: 0;
+        left: 0;
         top: 0;
         width: 100%;
         background: #ff6038;

@@ -7,15 +7,24 @@ import sectionStyles from './Section.module.scss';
 export const ProfileSection = ({ colors, isDesktop, scrollDirection, isFirstLoad }) => {
   const variants = createProfileVariant(isDesktop, scrollDirection, isFirstLoad);
 
+  // On first load (desktop), skip parent animations to avoid conflicts with child animate
+  const sectionProps = (isFirstLoad && isDesktop)
+    ? { initial: animationVariants.section.initial, animate: animationVariants.section.whileInView }
+    : getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection);
+
+  const contentProps = (isFirstLoad && isDesktop)
+    ? { initial: animationVariants.sectionContent.initial, animate: animationVariants.sectionContent.whileInView, transition: { duration: 0 } }
+    : getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection);
+
   return (
     <motion.section
       className={sectionStyles.section}
       aria-labelledby="profile-heading"
-      {...getAnimationProps(isDesktop, animationVariants.section, { duration: ANIMATION_DELAYS.SECTION }, scrollDirection)}
+      {...sectionProps}
     >
       <motion.div
         className={sectionStyles.section__content}
-        {...getAnimationProps(isDesktop, animationVariants.sectionContent, { duration: ANIMATION_DELAYS.CONTENT, delay: 0.2 }, scrollDirection)}
+        {...contentProps}
       >
         <div className={s.profileSection__profile}>
           <motion.div className={s.profileSection__imageContainer} {...variants.image}>

@@ -4,15 +4,27 @@ export const getRandomDelay = (min, max) => Math.floor(Math.random() * (max - mi
 
 export const getAnimationProps = (isDesktop, variant, customTransition = {}, scrollDirection = 'down') => {
   const yOffset = variant.initial?.y || 0;
+
+  // On mobile, use animate instead of whileInView
+  if (!isDesktop) {
+    const props = {
+      initial: variant.initial,
+      animate: variant.whileInView,
+      transition: customTransition
+    };
+    return props;
+  }
+
+  // On desktop, use whileInView with scroll direction
   return {
     ...variant,
     initial: {
       ...variant.initial,
-      y: isDesktop ? (scrollDirection === 'up' ? -Math.abs(yOffset) : Math.abs(yOffset)) : Math.abs(yOffset)
+      y: scrollDirection === 'up' ? -Math.abs(yOffset) : Math.abs(yOffset)
     },
     viewport: {
       ...variant.viewport,
-      once: !isDesktop
+      once: false
     },
     transition: customTransition
   };
@@ -35,9 +47,9 @@ export const createProfileVariant = (isDesktop, scrollDirection, isFirstLoad) =>
         transition: { duration: 0.8, ease: EASING.SMOOTH, ...config.name?.transition }
       },
       role: {
-        initial: { opacity: 0, x: 30 * xDirection },
+        initial: { opacity: 0, x: 50 * xDirection },
         target: { opacity: 1, x: 0 },
-        transition: { duration: 0.9, ease: EASING.ULTRA_SMOOTH, ...config.role?.transition }
+        transition: { duration: 0.85, ease: EASING.SMOOTH, ...config.role?.transition }
       }
     };
 
@@ -65,5 +77,11 @@ export const createProfileVariant = (isDesktop, scrollDirection, isFirstLoad) =>
     return createVariant('desktop', { useAnimate: false });
   }
 
-  return createVariant('mobile', { useAnimate: false });
+  // Mobile always uses animate (not whileInView)
+  return createVariant('mobile', {
+    useAnimate: true,
+    image: { transition: { delay: 0.6 } },
+    name: { transition: { delay: 0.9 } },
+    role: { transition: { delay: 1.1 } }
+  });
 };
