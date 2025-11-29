@@ -6,7 +6,7 @@ export const COLOR_PALETTE_LIGHT = ['#e63946', '#ff6038', '#06a77d', '#6930c3', 
 export const FINAL_TEXT = 'ludwig lillieborg';
 export const MISTAKE_TEXT = 'ludvi ';
 export const BACKSPACE_TO_LENGTH = 3;
-export const DEBUG_MODE = true;
+export const DEBUG_MODE = false;
 
 export const TIMING = {
   INITIAL_DELAY: 2000,
