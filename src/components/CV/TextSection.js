@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { animationVariants, ANIMATION_DELAYS } from '../../constants';
 import { getAnimationProps } from '../../utils';
+import { SectionText } from './SectionText';
 import s from './Section.module.scss';
 
 export const TextSection = ({ section, colors, isDesktop, scrollDirection, sectionIndex }) => (
@@ -16,12 +17,15 @@ export const TextSection = ({ section, colors, isDesktop, scrollDirection, secti
       <h3 id={`${section.id}-heading`} className={s.section__title} style={{ color: colors[1] }}>
         {section.title}
       </h3>
-      <motion.p
-        className={s.section__text}
-        {...getAnimationProps(isDesktop, animationVariants.text, { duration: 0.6, delay: ANIMATION_DELAYS.ITEM_BASE }, scrollDirection, sectionIndex)}
+      <SectionText
+        isDesktop={isDesktop}
+        scrollDirection={scrollDirection}
+        sectionIndex={sectionIndex}
+        duration={0.6}
+        delay={ANIMATION_DELAYS.ITEM_BASE}
       >
         {section.text}
-      </motion.p>
+      </SectionText>
     </motion.div>
   </motion.section>
 );

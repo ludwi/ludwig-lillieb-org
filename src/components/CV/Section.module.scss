@@ -31,7 +31,7 @@
     }
 
     &__title {
-        font-size: 3.6rem;
+        font-size: 2.8rem;
         margin: 0 0 1.6rem 0;
         font-weight: 700;
         position: relative;
@@ -43,13 +43,17 @@
     }
 
     &__text {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
         line-height: 1.6;
-        margin: 0;
+        margin: 0 0 1.2rem 0;
         color: #555;
         font-family: 'JetBrains Mono', monospace;
         transition: color 0.3s ease;
         font-weight: 400;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
 
         :global(.light-mode) & {
             color: #555;

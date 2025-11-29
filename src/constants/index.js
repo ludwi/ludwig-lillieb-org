@@ -6,7 +6,7 @@ export const COLOR_PALETTE_LIGHT = ['#e63946', '#ff6038', '#06a77d', '#6930c3', 
 export const FINAL_TEXT = 'ludwig lillieborg';
 export const MISTAKE_TEXT = 'ludvi ';
 export const BACKSPACE_TO_LENGTH = 3;
-export const DEBUG_MODE = false;
+export const DEBUG_MODE = true;
 
 export const TIMING = {
   INITIAL_DELAY: 2000,
@@ -50,12 +50,12 @@ export const content = {
     {
       id: 'hello',
       title: 'Hej',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
+      text: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>'
     },
     {
       id: 'about',
       title: 'Om',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.'
+      text: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>'
     }
   ],
   experience: {
@@ -103,26 +103,26 @@ export const animationVariants = {
   section: {
     initial: { opacity: 0 },
     whileInView: { opacity: 1 },
-    viewport: { once: false, amount: 0.5 }
+    viewport: { once: false, amount: 0.3 }
   },
   sectionContent: {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.6 }
+    viewport: { once: false, amount: 0.4 }
   },
   experienceItem: {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.5 }
+    viewport: { once: false, amount: 0.3 }
   },
   skillItem: {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.3 }
+    viewport: { once: false, amount: 0.2 }
   },
   text: {
     initial: { opacity: 0, y: 15 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.6 }
+    viewport: { once: false, amount: 0.4 }
   }
 };

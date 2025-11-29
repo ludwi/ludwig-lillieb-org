@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { content, animationVariants, ANIMATION_DELAYS } from '../../constants';
 import { getAnimationProps } from '../../utils';
+import { SectionText } from './SectionText';
 import s from './ExperienceSection.module.scss';
 import sectionStyles from './Section.module.scss';
 
@@ -40,12 +41,15 @@ export const ExperienceSection = ({ colors, isDesktop, scrollDirection, sectionI
                     <span className={s.experienceSection__itemDate}>{exp.period}</span>
                   </div>
                   <p className={s.experienceSection__itemCompany} style={{ color: colors[1] }}>{exp.company}</p>
-                  <motion.p
-                    className={sectionStyles.section__text}
-                    {...getAnimationProps(isDesktop, animationVariants.text, { duration: duration + 0.15, delay: textDelay }, scrollDirection)}
+                  <SectionText
+                    isDesktop={isDesktop}
+                    scrollDirection={scrollDirection}
+                    sectionIndex={sectionIndex}
+                    duration={duration + 0.15}
+                    delay={textDelay}
                   >
                     {exp.description}
-                  </motion.p>
+                  </SectionText>
                 </div>
               </motion.div>
             );
