@@ -1,7 +1,27 @@
-$breakpoint-tablet: 768px;
+:root {
+    --color-bg: #0a0a0a;
+    --color-surface: #111111;
+    --color-border: #1f1f1f;
+    --color-border-strong: #2e2e2e;
+    --color-fg: #ededed;
+    --color-fg-soft: #c8c8c8;
+    --color-muted: #a8a8a8;
+    --color-subtle: #8a8a8a;
+    --color-accent: #ff7a55;
+    --color-accent-soft: rgba(255, 122, 85, 0.12);
 
-$primaryLight: #006d77;
-$primaryDark: #83c5be;
+    --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-$white: #ffffff;
-$black: #000000;
+    --content-width: 62rem;
+
+    --space-1: 0.5rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2rem;
+    --space-5: 2.5rem;
+    --space-6: 3rem;
+    --space-8: 4rem;
+    --space-10: 5rem;
+    --space-12: 6rem;
+    --space-16: 8rem;
+}
