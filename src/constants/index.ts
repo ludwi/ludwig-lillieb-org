@@ -77,7 +77,7 @@ export const content: Content = {
     countryCode: 'SE'
   },
 
-  email: 'bHVkd2lnLmxpbGxpZWJvcmdAZ21haWwuY29t',
+  email: 'bHVkd2lnQGxpbGxpZWIub3Jn',
   phone: 'KzQ2NzM1MTE2NTcy',
 
   about: [
