@@ -23,11 +23,6 @@ const personSchema = {
     addressLocality: content.address.city,
     addressCountry: content.address.countryCode
   },
-  knowsAbout: [...content.skills],
-  alumniOf: content.education.map((edu) => ({
-    '@type': 'EducationalOrganization',
-    name: edu.school
-  })),
   sameAs: content.socials.map((s) => s.url)
 };
 
