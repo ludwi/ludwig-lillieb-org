@@ -10,7 +10,7 @@ export function Skills() {
         {content.skills.map((skill) => (
           <li key={skill.name} className={s.skill}>
             <span className={s.skillName}>{skill.name}</span>
-            <span className={s.skillYears}>{skill.years} år</span>
+            <span className={s.skillYears}>~{skill.years} år</span>
           </li>
         ))}
       </ul>

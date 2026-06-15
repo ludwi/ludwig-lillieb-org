@@ -13,6 +13,7 @@ export function Education() {
             <div>
               <h3 className={s.educationDegree}>{item.degree}</h3>
               <p className={s.educationSchool}>{item.school}</p>
+              <p className={s.educationDescription}>{item.description}</p>
             </div>
           </li>
         ))}

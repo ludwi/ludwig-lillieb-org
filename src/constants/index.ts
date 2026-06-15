@@ -19,6 +19,7 @@ export interface EducationEntry {
   degree: string;
   school: string;
   period: string;
+  description: string;
 }
 
 export interface CertificatePeriod {
@@ -37,7 +38,7 @@ export interface Skill {
   years: number;
 }
 
-export type SocialPlatform = 'linkedin' | 'instagram' | 'github';
+export type SocialPlatform = 'linkedin' | 'github';
 
 export interface Social {
   platform: SocialPlatform;
@@ -82,7 +83,7 @@ export const content: Content = {
 
   about: [
     'Min styrka ligger i kombinationen av djup teknisk bredd och förmågan att leda projekt i mål. Jag tar ett naturligt ägandeskap för helheten – systemdesign, prestanda och slutanvändarens upplevelse.',
-    'Med ett ständigt fokus på kompetensutveckling bidrar jag aktivt till att höja kvaliteten i koden såväl som hos mina kollegor och kunder.'
+    'Genom ett genuint engagemang för kompetensutveckling bidrar jag aktivt till att lyfta både mig själv och mina kollegor.'
   ],
 
   experience: [
@@ -121,7 +122,8 @@ export const content: Content = {
     {
       degree: 'Applikationsutveckling',
       school: 'Lernia Yrkeshögskola',
-      period: '2010 — 2012'
+      period: '2010 — 2012',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
     }
   ],
 
@@ -130,7 +132,7 @@ export const content: Content = {
       name: 'Optimizely Certified Developer',
       issuer: 'Optimizely',
       periods: [
-        { from: 'April 2025', to: 'April 2027' },
+        { from: 'April 2026', to: 'April 2028' },
         { from: 'Juni 2015', to: 'Juni 2017' },
         { from: 'Juni 2013', to: 'Juni 2015' }
       ]
@@ -152,12 +154,11 @@ export const content: Content = {
   ],
 
   personal: [
-    'När jag inte kodar – eller skriver Claude-promptar numera – hittar man mig oftast i trädgården. Ledig tid tillbringas helst med familjen, varvat med ett genuint intresse för musik och tv-spel.'
+    'När jag inte kodar – eller skriver Claude-promptar numera – hittar man mig oftast i trädgården. Ledig tid tillbringas helst med familjen, varvat med ett stort intresse för musik och tv-spel.'
   ],
 
   socials: [
     { platform: 'linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/in/ludwiglillieborg/' },
-    { platform: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/ludwwwg' },
     { platform: 'github', label: 'GitHub', url: 'https://github.com/ludwi' }
   ],
 

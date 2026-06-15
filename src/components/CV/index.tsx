@@ -15,8 +15,8 @@ export function CV() {
         <Hero />
         <About />
         <Experience />
-        <Education />
         <Certificates />
+        <Education />
         <Skills />
         <Personal />
       </article>
