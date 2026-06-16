@@ -22,8 +22,7 @@ const personSchema = {
     '@type': 'PostalAddress',
     addressLocality: content.address.city,
     addressCountry: content.address.countryCode
-  },
-  sameAs: content.socials.map((s) => s.url)
+  }
 };
 
 const escapeHtml = (str: string): string =>

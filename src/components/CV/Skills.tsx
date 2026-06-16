@@ -6,14 +6,18 @@ export function Skills() {
   return (
     <section className={s.section} aria-labelledby="skills-heading">
       <SectionHeader title="Kompetenser" id="skills-heading" />
-      <ul className={s.skillsList}>
-        {content.skills.map((skill) => (
-          <li key={skill.name} className={s.skill}>
-            <span className={s.skillName}>{skill.name}</span>
-            <span className={s.skillYears}>~{skill.years} år</span>
-          </li>
+      <div className={s.skillGroups}>
+        {content.skills.map((group) => (
+          <div key={group.category} className={s.skillGroup}>
+            <h3 className={s.skillGroupTitle}>{group.category}</h3>
+            <ul className={s.skillItems}>
+              {group.items.map((item) => (
+                <li key={item} className={s.skillItem}>{item}</li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

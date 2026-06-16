@@ -33,17 +33,9 @@ export interface CertificateEntry {
   periods: readonly CertificatePeriod[];
 }
 
-export interface Skill {
-  name: string;
-  years: number;
-}
-
-export type SocialPlatform = 'linkedin' | 'github';
-
-export interface Social {
-  platform: SocialPlatform;
-  label: string;
-  url: string;
+export interface SkillGroup {
+  category: string;
+  items: readonly string[];
 }
 
 export interface Content {
@@ -60,8 +52,7 @@ export interface Content {
   experience: readonly JobEntry[];
   education: readonly EducationEntry[];
   certificates: readonly CertificateEntry[];
-  skills: readonly Skill[];
-  socials: readonly Social[];
+  skills: readonly SkillGroup[];
   personal: readonly string[];
 }
 
@@ -83,7 +74,7 @@ export const content: Content = {
 
   about: [
     'Min styrka ligger i kombinationen av djup teknisk bredd och förmågan att leda projekt i mål. Jag tar ett naturligt ägandeskap för helheten – systemdesign, prestanda och slutanvändarens upplevelse.',
-    'Genom ett genuint engagemang för kompetensutveckling bidrar jag aktivt till att lyfta både mig själv och mina kollegor.'
+    'Tekniken förändras snabbt, och jag tycker det är roligt att hänga med — och gärna ligga steget före.'
   ],
 
   experience: [
@@ -123,7 +114,7 @@ export const content: Content = {
       degree: 'Applikationsutveckling',
       school: 'Lernia Yrkeshögskola',
       period: '2010 — 2012',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      description: 'Tvåårig yrkeshögskoleutbildning med fokus på utveckling i .NET-stacken. Praktik som resulterade i anställning.'
     }
   ],
 
@@ -157,24 +148,69 @@ export const content: Content = {
     'När jag inte kodar – eller skriver Claude-promptar numera – hittar man mig oftast i trädgården. Ledig tid tillbringas helst med familjen, varvat med ett stort intresse för musik och tv-spel.'
   ],
 
-  socials: [
-    { platform: 'linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/in/ludwiglillieborg/' },
-    { platform: 'github', label: 'GitHub', url: 'https://github.com/ludwi' }
-  ],
-
   skills: [
-    { name: '.NET', years: 15 },
-    { name: 'JavaScript', years: 15 },
-    { name: 'CSS', years: 15 },
-    { name: 'HTML', years: 15 },
-    { name: 'Optimizely', years: 15 },
-    { name: 'SQL', years: 15 },
-    { name: 'SEO', years: 10 },
-    { name: 'Git', years: 10 },
-    { name: 'React', years: 10 }, 
-    { name: 'DevOps', years: 10 },
-    { name: 'Tillgänglighet', years: 10 },
-    { name: 'Next.js', years: 5 },
-    { name: 'AI', years: 2 }
+    {
+      category: 'Frontend',
+      items: [
+        'HTML',
+        'CSS/SCSS',
+        'JavaScript',
+        'TypeScript',
+        'React',
+        'Next.js',
+        'Vite',
+        'Webpack',
+        'Storybook',
+        'Tillgänglighet (WCAG)'
+      ]
+    },
+    {
+      category: 'Backend',
+      items: [
+        'C#',
+        '.NET',
+        'ASP.NET Core',
+        '.NET Framework',
+        'Entity Framework',
+        'Node.js',
+        'Python',
+        'Django',
+        'REST API',
+        'GraphQL',
+        'SQL',
+        'PostgreSQL',
+        'MongoDB',
+        'Redis'
+      ]
+    },
+    {
+      category: 'CMS',
+      items: ['Optimizely', 'Umbraco', 'Litium', 'Contentful', 'Wagtail']
+    },
+    {
+      category: 'Verktyg & DevOps',
+      items: [
+        'Git',
+        'GitHub Actions',
+        'Azure DevOps',
+        'CircleCI',
+        'AppVeyor',
+        'Docker',
+        'Linux',
+        'Bash',
+        'CI/CD',
+        'Trivy',
+        'Jest',
+        'Playwright',
+        'Lighthouse',
+        'Application Insights',
+        'Sentry',
+        'SEO'
+      ]
+    },
+    {
+      category: 'Cloud',
+      items: ['Azure', 'Azure Front Door', 'Cloudflare']
+    }
   ]
 };

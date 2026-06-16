@@ -1,6 +1,5 @@
 import { content } from '../../constants';
 import { Contact } from './Contact';
-import { Socials } from './Socials';
 import s from './CV.module.scss';
 
 export function Aside() {
@@ -14,7 +13,6 @@ export function Aside() {
         className={s.asideAvatar}
       />
       <Contact />
-      <Socials />
     </aside>
   );
 }
