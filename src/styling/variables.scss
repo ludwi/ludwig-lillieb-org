@@ -31,3 +31,16 @@
     --space-12: 6rem;
     --space-16: 8rem;
 }
+
+:root[data-theme='light'] {
+    --color-bg: #fafafa;
+    --color-surface: #f0f0f0;
+    --color-border: #e2e2e2;
+    --color-border-strong: #b8b8b8;
+    --color-fg: #1a1a1a;
+    --color-fg-soft: #404040;
+    --color-muted: #595959;
+    --color-subtle: #707070;
+    --color-accent: #b8380e;
+    --color-accent-soft: rgba(184, 56, 14, 0.12);
+}
